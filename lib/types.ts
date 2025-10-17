@@ -1,6 +1,6 @@
 import type { ObjectId } from "mongodb";
 
-export type LessonMeta = {
+export type ConceptMeta = {
   title: string;
   description: string;
 };
@@ -8,7 +8,7 @@ export type LessonMeta = {
 export type Section = {
   title: string;
   description: string;
-  lessons: LessonMeta[];
+  concepts: ConceptMeta[];
 };
 
 export type Roadmap = {

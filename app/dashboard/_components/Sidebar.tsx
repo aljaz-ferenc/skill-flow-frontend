@@ -1,11 +1,17 @@
+"use client";
+
 import { Map as MapIcon } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 const sidebarItems = [
   { href: "/dashboard/roadmaps", label: "Roadmaps", icon: <MapIcon /> },
 ];
 
 export default function Sidebar() {
+  const pathname = usePathname();
+
   return (
     <aside className="w-full max-w-60 py-3">
       <ul>
@@ -13,7 +19,10 @@ export default function Sidebar() {
           <Link
             href={item.href}
             key={item.href}
-            className="flex gap-2 items-center px-3"
+            className={cn(
+              "flex gap-2 items-center p-3 text-muted-foreground rounded-md",
+              pathname.startsWith(item.href) && "bg-muted text-primary",
+            )}
           >
             {item.icon}
             {item.label}
