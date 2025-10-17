@@ -1,6 +1,9 @@
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import type { Roadmap } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 type RoadmapCardProps = {
   roadmap: Roadmap;
@@ -8,11 +11,8 @@ type RoadmapCardProps = {
 
 export default function RoadmapCard({ roadmap }: RoadmapCardProps) {
   return (
-    <Link
-      href={`/dashboard/roadmaps/${roadmap._id}`}
-      className="bg-white dark:bg-gray-800/50 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden cursor-pointer"
-    >
-      <div className="p-6">
+    <Card>
+      <CardContent className="w-70">
         <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
           {roadmap.topic}
         </h3>
@@ -24,17 +24,20 @@ export default function RoadmapCard({ roadmap }: RoadmapCardProps) {
         </div>
         <div className="flex justify-between items-center text-sm text-gray-500 dark:text-gray-400">
           <span>45% Complete</span>
-          <button
-            type="button"
-            className="flex items-center gap-2 text-primary font-semibold hover:underline"
+          <Link
+            href={`/dashboard/roadmaps/${roadmap._id}`}
+            className={cn(
+              "flex items-center gap-2 cursor-pointer",
+              buttonVariants({ variant: "link" }),
+            )}
           >
             Continue
             <span className="material-symbols-outlined text-base">
               <ArrowRight />
             </span>
-          </button>
+          </Link>
         </div>
-      </div>
-    </Link>
+      </CardContent>
+    </Card>
   );
 }
