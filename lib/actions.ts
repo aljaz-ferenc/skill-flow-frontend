@@ -17,9 +17,9 @@ export async function getRoadmap(roadmapId: string) {
   try {
     const client = await clientPromise;
     const db = client.db("prod");
-    return await db
+    return (await db
       .collection("roadmaps")
-      .findOne({ _id: new ObjectId(roadmapId) });
+      .findOne({ _id: new ObjectId(roadmapId) })) as Roadmap;
   } catch (err) {
     console.error(err);
     throw err;
