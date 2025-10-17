@@ -1,6 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import type { Roadmap } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -11,7 +11,7 @@ type RoadmapCardProps = {
 
 export default function RoadmapCard({ roadmap }: RoadmapCardProps) {
   return (
-    <Card>
+    <Card className=" shadow-md hover:shadow-lg transition-shadow duration-300">
       <CardContent className="w-70">
         <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
           {roadmap.topic}
