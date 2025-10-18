@@ -42,8 +42,8 @@ export default function RoadmapAccordion({
                   <Link
                     href={
                       status === "locked"
-                        ? `/dashboard/roadmaps/${roadmapId}`
-                        : `/dashboard/roadmaps/${roadmapId}/concepts/${concept.title}`
+                        ? `/dashboard/roadmaps/${roadmapId}/sections/${section._id}/concepts/${concept._id}`
+                        : `/dashboard/roadmaps/${roadmapId}/sections/${section._id}/concepts/${concept._id}`
                     }
                     className="flex gap-3 items-center hover:bg-muted px-4 py-4 rounded-xl transition-colors"
                     key={concept.description}

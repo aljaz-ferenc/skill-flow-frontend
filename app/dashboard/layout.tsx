@@ -6,7 +6,7 @@ export default async function DashboardLayout(
   return (
     <main className="flex min-h-screen  max-w-screen overflow-x-hidden">
       <Sidebar />
-      <section className="p-2 w-full">{props.children}</section>
+      <section className="w-full">{props.children}</section>
     </main>
   );
 }
