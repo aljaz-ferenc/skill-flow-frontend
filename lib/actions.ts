@@ -3,6 +3,7 @@
 import { ObjectId } from "mongodb";
 import clientPromise from "@/lib/mongodb";
 import type { AnswerResult, Lesson, Roadmap } from "@/lib/types";
+import {revalidatePath} from "next/cache";
 
 export async function getRoadmaps() {
   try {
@@ -101,4 +102,25 @@ export async function checkAnswer(payload: {
   } catch (err) {
     throw new Error("Error checking answer");
   }
+}
+
+export async function generateRoadmap(topic: string){
+    try{
+        const res = await fetch("http://127.0.0.1:8000/generate-roadmap", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({topic}),
+        });
+
+        if (!res.ok) {
+            throw new Error("Error generating request");
+        }
+        revalidatePath('/dashboard/roadmaps')
+        return await res.json()
+    }catch(err){
+        console.error(err)
+        throw err
+    }
 }

@@ -17,14 +17,17 @@ export default function RoadmapAccordion({
   sections,
   roadmapId,
 }: RoadmapAccordionProps) {
+
   return (
     <Accordion type="multiple">
       {sections.map((section) => (
         <AccordionItem value={section.title} key={section.title}>
           <AccordionTrigger className="cursor-pointer">
             <div className="flex gap-4 items-center">
-              {/*<Lock />*/}
-              <ProgressIndicator progress={90} />
+              {section.status === "locked" && <Lock />}
+              {section.status === "current" && (
+                <ProgressIndicator progress={0} />
+              )}
               <div className="flex flex-col">
                 <h3 className="text-base font-medium leading-normal">
                   {section.title}
@@ -48,7 +51,7 @@ export default function RoadmapAccordion({
                     className="flex gap-3 items-center hover:bg-muted px-4 py-4 rounded-xl transition-colors"
                     key={concept.description}
                   >
-                    <ConceptStatusIndicator status={status} />
+                    <ConceptStatusIndicator status={concept.status} />
                     <div key={concept.title} className="flex flex-col gap-1">
                       <span className="font-bold">{concept.title}</span>
                       <span className="font-normal text-xs">

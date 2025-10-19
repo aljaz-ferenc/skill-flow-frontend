@@ -39,6 +39,7 @@ export type ConceptMeta = {
   description: string;
   _id: string;
   lessons: Lesson[];
+  status: "locked" | "current" | "completed";
 };
 
 export type Section = {
@@ -46,6 +47,7 @@ export type Section = {
   description: string;
   concepts: ConceptMeta[];
   _id: string;
+  status: "locked" | "current" | "completed";
 };
 
 export type Roadmap = {

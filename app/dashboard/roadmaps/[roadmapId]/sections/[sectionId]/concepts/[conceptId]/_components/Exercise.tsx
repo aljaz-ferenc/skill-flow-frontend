@@ -62,6 +62,7 @@ export default function ExerciseComponent({
                   id="answer"
                   placeholder="Type your answer here..."
                   autoComplete="off"
+                  autoCorrect="off"
                   className="ml-1"
                 />
                 {fieldState.invalid && (
