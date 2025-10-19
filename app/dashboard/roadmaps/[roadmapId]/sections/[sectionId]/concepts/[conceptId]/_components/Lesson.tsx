@@ -37,7 +37,10 @@ export default function Lesson({ lessons }: LessonProps) {
           )}
         </article>
       ) : (
-        <ExerciseComponent exercise={lesson!.exercise as Exercise} />
+        <ExerciseComponent
+          lessonContent={lesson!.content}
+          exercise={lesson!.exercise as Exercise}
+        />
       )}
       <hr className="mt-5" />
       <div className="flex justify-between max-w-4xl w-full mx-auto my-10 cursor-pointer">

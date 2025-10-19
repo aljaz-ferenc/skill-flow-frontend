@@ -54,3 +54,8 @@ export type Roadmap = {
   sections: Section[];
   createdAt: Date;
 };
+
+export type AnswerResult = {
+  is_correct: boolean;
+  additional_explanation: string;
+};

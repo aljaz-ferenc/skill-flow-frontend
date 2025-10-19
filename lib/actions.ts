@@ -1,7 +1,8 @@
+"use server";
+
 import { ObjectId } from "mongodb";
-import { revalidatePath } from "next/cache";
 import clientPromise from "@/lib/mongodb";
-import type { Exercise, Lesson, Roadmap } from "@/lib/types";
+import type { AnswerResult, Lesson, Roadmap } from "@/lib/types";
 
 export async function getRoadmaps() {
   try {
@@ -77,11 +78,27 @@ export async function getLessonsByConceptId(conceptId: string) {
   }
 }
 
-export async function checkAnswer(exercise: Exercise) {
+export async function checkAnswer(payload: {
+  question: string;
+  answer: string;
+  lessonContent: string;
+}): Promise<AnswerResult> {
+  console.log("PAYLOAD: ", payload);
   try {
-    if (exercise.type === "question") {
+    const res = await fetch("http://127.0.0.1:8000/check-answer", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      throw new Error("Error checking answer");
     }
+
+    return await res.json();
   } catch (err) {
-    console.error(err);
+    throw new Error("Error checking answer");
   }
 }
