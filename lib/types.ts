@@ -11,7 +11,7 @@ export type MCQExercise = BaseExercise & {
   type: "mcq";
   exercise: {
     question: string;
-    answerOptions: string[];
+    answer_options: string[];
     answer_index: number;
   };
 };
@@ -27,18 +27,28 @@ export type Exercise = MCQExercise | QuestionExercise;
 
 export type Lesson = {
   _id: string;
-  content: string;
-  exercise: Exercise;
+  content?: string;
+  exercise?: Exercise;
   conceptId: string;
   title: string;
-  isFinal: boolean;
+  // isFinal: boolean;
+  status: "locked" | "current" | "completed";
+  description: string;
+  learning_objectives: string[];
+};
+
+export type LessonMeta = {
+  title: string;
+  description: string;
+  learning_objectives: string[];
+  status: "locked" | "current" | "completed";
 };
 
 export type ConceptMeta = {
   title: string;
   description: string;
   _id: string;
-  lessons: Lesson[];
+  lessons: LessonMeta[];
   status: "locked" | "current" | "completed";
 };
 

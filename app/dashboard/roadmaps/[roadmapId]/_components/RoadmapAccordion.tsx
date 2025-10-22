@@ -7,6 +7,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import type { Roadmap } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 type RoadmapAccordionProps = {
   sections: Roadmap["sections"];
@@ -17,12 +18,16 @@ export default function RoadmapAccordion({
   sections,
   roadmapId,
 }: RoadmapAccordionProps) {
-
   return (
     <Accordion type="multiple">
       {sections.map((section) => (
         <AccordionItem value={section.title} key={section.title}>
-          <AccordionTrigger className="cursor-pointer">
+          <AccordionTrigger
+            className={cn(
+              "cursor-pointer",
+              section.status === "locked" && "text-muted-foreground",
+            )}
+          >
             <div className="flex gap-4 items-center">
               {section.status === "locked" && <Lock />}
               {section.status === "current" && (
@@ -32,7 +37,15 @@ export default function RoadmapAccordion({
                 <h3 className="text-base font-medium leading-normal">
                   {section.title}
                 </h3>
-                <p className="text-amber-400 text-sm">In Progress</p>
+                {section.status === "current" && (
+                  <p className="text-amber-400 text-xs italic">In Progress</p>
+                )}
+                {section.status === "locked" && (
+                  <p className="text-muted-foreground text-xs italic">Locked</p>
+                )}
+                {section.status === "completed" && (
+                  <p className="text-amber-400 text-xs italic">Completed</p>
+                )}
               </div>
             </div>
           </AccordionTrigger>
@@ -46,9 +59,13 @@ export default function RoadmapAccordion({
                     href={
                       status === "locked"
                         ? `/dashboard/roadmaps/${roadmapId}/sections/${section._id}/concepts/${concept._id}`
-                        : `/dashboard/roadmaps/${roadmapId}/sections/${section._id}/concepts/${concept._id}`
+                        : `/lessons?roadmapId=${roadmapId}&sectionId=${section._id}&conceptId=${concept._id}`
                     }
-                    className="flex gap-3 items-center hover:bg-muted px-4 py-4 rounded-xl transition-colors"
+                    className={cn(
+                      "flex gap-3 items-center hover:bg-muted px-4 py-4 rounded-xl transition-colors",
+                      concept.status === "locked" &&
+                        "text-muted-foreground pointer-events-none",
+                    )}
                     key={concept.description}
                   >
                     <ConceptStatusIndicator status={concept.status} />
