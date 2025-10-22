@@ -9,10 +9,10 @@ export default async function RoadmapsPage() {
     <main>
       <h2 className="text-4xl font-bold mb-10">My Roadmaps</h2>
       <div className="flex flex-wrap gap-5">
-        <NewRoadmapCard />
         {roadmaps?.map((roadmap) => (
           <RoadmapCard roadmap={roadmap} key={roadmap._id.toString()} />
         ))}
+        <NewRoadmapCard />
       </div>
     </main>
   );

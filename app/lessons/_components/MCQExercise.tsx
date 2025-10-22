@@ -1,19 +1,20 @@
-import { type Dispatch, type SetStateAction, useState } from "react";
+import type { Dispatch, SetStateAction } from "react";
 import { Button } from "@/components/ui/button";
-import type { AnswerResult, Exercise } from "@/lib/types";
+import type { Exercise } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 type MCQExerciseProps = {
   exercise: Exercise;
-  setAnswerResult: Dispatch<SetStateAction<AnswerResult | null>>;
   clickedIndices: number[];
   setClickedIndices: Dispatch<SetStateAction<number[]>>;
+  onAnswerCorrect: () => void;
 };
 
 export default function MCQExercise({
   exercise,
   clickedIndices,
   setClickedIndices,
+  onAnswerCorrect,
 }: MCQExerciseProps) {
   if (exercise.type !== "mcq") return;
 
@@ -23,7 +24,7 @@ export default function MCQExercise({
       setClickedIndices((prev) => Array.from(new Set([...prev, answerIndex])));
 
       if (isCorrect) {
-        console.log("neext lesson");
+        onAnswerCorrect();
       }
     }
   }

@@ -81,6 +81,7 @@ export async function getLessonsByConceptId(conceptId: string) {
       status: doc.status,
       description: doc.description,
       learning_objectives: doc.learning_objectives,
+      is_final: doc.is_final,
     })) as Lesson[];
   } catch (err) {
     console.error("Could not get lessons by conceptId: ", err);
@@ -142,6 +143,29 @@ export async function getLessonById(lessonId: string) {
     return await lessonsCol.findOne({
       _id: lessonId,
     });
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+}
+
+export async function completeLesson(lessonId: string) {
+  try {
+    const client = await clientPromise;
+    const db = client.db("prod");
+    const lessonsCol = db.collection("lessons");
+
+    const updatedLesson = await lessonsCol.findOneAndUpdate(
+      { _id: new ObjectId(lessonId) },
+      {
+        $set: {
+          status: "completed",
+        },
+      },
+      { returnDocument: "after" },
+    );
+    revalidatePath("/lessons");
+    return JSON.parse(JSON.stringify(updatedLesson)) as Lesson;
   } catch (err) {
     console.error(err);
     throw err;

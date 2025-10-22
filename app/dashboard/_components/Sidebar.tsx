@@ -13,7 +13,7 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-full max-w-60 py-3">
+    <aside className="w-full max-w-60 p-3">
       <ul>
         {sidebarItems.map((item) => (
           <Link
@@ -21,7 +21,8 @@ export default function Sidebar() {
             key={item.href}
             className={cn(
               "flex gap-2 items-center p-3 text-muted-foreground rounded-md",
-              pathname.startsWith(item.href) && "bg-muted text-primary",
+              pathname.startsWith(item.href) &&
+                "bg-muted text-secondary-foreground",
             )}
           >
             {item.icon}

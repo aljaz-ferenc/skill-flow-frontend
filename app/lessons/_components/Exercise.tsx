@@ -9,17 +9,14 @@ import type { AnswerResult, Exercise } from "@/lib/types";
 type ExerciseProps = {
   exercise: Exercise;
   lessonContent: string;
+  onAnswerCorrectAction: () => void;
 };
-
-const formSchema = z.object({
-  answer: z.string().min(3, { error: "Type at least 3 characters" }),
-});
 
 export default function ExerciseComponent({
   exercise,
   lessonContent,
+  onAnswerCorrectAction,
 }: ExerciseProps) {
-  const [answerResult, setAnswerResult] = useState<AnswerResult | null>(null);
   const [clickedIndices, setClickedIndices] = useState<number[]>([]);
 
   if (exercise.type === "question") {
@@ -31,6 +28,7 @@ export default function ExerciseComponent({
   if (exercise.type === "mcq") {
     return (
       <MCQExercise
+        onAnswerCorrect={onAnswerCorrectAction}
         exercise={exercise}
         setClickedIndices={setClickedIndices}
         clickedIndices={clickedIndices}

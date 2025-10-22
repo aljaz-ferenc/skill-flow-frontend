@@ -31,7 +31,7 @@ export type Lesson = {
   exercise?: Exercise;
   conceptId: string;
   title: string;
-  // isFinal: boolean;
+  is_final: boolean;
   status: "locked" | "current" | "completed";
   description: string;
   learning_objectives: string[];

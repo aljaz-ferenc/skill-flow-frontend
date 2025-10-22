@@ -1,5 +1,6 @@
-import { CheckCircle, Lock, PlayCircle } from "lucide-react";
+import { CheckCircle, PlayCircle } from "lucide-react";
 import Link from "next/link";
+import { CiLock } from "react-icons/ci";
 import {
   Accordion,
   AccordionContent,
@@ -7,7 +8,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import type { Roadmap } from "@/lib/types";
-import { cn } from "@/lib/utils";
+import { cn, getSectionProgressPercentage } from "@/lib/utils";
 
 type RoadmapAccordionProps = {
   sections: Roadmap["sections"];
@@ -19,19 +20,24 @@ export default function RoadmapAccordion({
   roadmapId,
 }: RoadmapAccordionProps) {
   return (
-    <Accordion type="multiple">
+    <Accordion
+      type="multiple"
+      defaultValue={[sections.find((s) => s.status === "current")?.title || ""]}
+    >
       {sections.map((section) => (
         <AccordionItem value={section.title} key={section.title}>
           <AccordionTrigger
             className={cn(
-              "cursor-pointer",
-              section.status === "locked" && "text-muted-foreground",
+              "cursor-pointer flex items-center",
+              section.status === "locked" && "text-muted-foreground/50",
             )}
           >
             <div className="flex gap-4 items-center">
-              {section.status === "locked" && <Lock />}
+              {section.status === "locked" && <CiLock size={20} />}
               {section.status === "current" && (
-                <ProgressIndicator progress={0} />
+                <ProgressIndicator
+                  progress={getSectionProgressPercentage(section)}
+                />
               )}
               <div className="flex flex-col">
                 <h3 className="text-base font-medium leading-normal">
@@ -41,7 +47,9 @@ export default function RoadmapAccordion({
                   <p className="text-amber-400 text-xs italic">In Progress</p>
                 )}
                 {section.status === "locked" && (
-                  <p className="text-muted-foreground text-xs italic">Locked</p>
+                  <p className="text-muted-foreground/50 text-xs italic">
+                    Locked
+                  </p>
                 )}
                 {section.status === "completed" && (
                   <p className="text-amber-400 text-xs italic">Completed</p>
@@ -134,7 +142,7 @@ type ConceptStatusIndicatorProps = {
 };
 
 function ConceptStatusIndicator({ status }: ConceptStatusIndicatorProps) {
-  if (status === "locked") return <Lock size={16} />;
+  if (status === "locked") return <CiLock size={16} />;
   if (status === "current")
     return <PlayCircle className="text-amber-400" size={16} />;
 
