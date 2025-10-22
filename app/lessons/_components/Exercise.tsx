@@ -1,10 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { z } from "zod";
 import MCQExercise from "@/app/lessons/_components/MCQExercise";
 import QuestionExercise from "@/app/lessons/_components/QuestionExercise";
-import type { AnswerResult, Exercise } from "@/lib/types";
+import type { Exercise } from "@/lib/types";
 
 type ExerciseProps = {
   exercise: Exercise;

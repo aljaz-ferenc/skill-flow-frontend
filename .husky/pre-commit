@@ -1,0 +1,3 @@
+pnpm exec echo "Running pre-commit hook..."
+pnpm exec biome lint --error-on-warnings ./
+pnpm exec biome format --write ./

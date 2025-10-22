@@ -3,12 +3,7 @@
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
 import clientPromise from "@/lib/mongodb";
-import {
-  type AnswerResult,
-  Exercise,
-  type Lesson,
-  type Roadmap,
-} from "@/lib/types";
+import type { AnswerResult, Lesson, Roadmap } from "@/lib/types";
 
 export async function getRoadmaps() {
   try {
@@ -109,6 +104,7 @@ export async function checkAnswer(payload: {
 
     return await res.json();
   } catch (err) {
+    console.error(err);
     throw new Error("Error checking answer");
   }
 }
