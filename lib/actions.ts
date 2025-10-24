@@ -167,3 +167,30 @@ export async function completeLesson(lessonId: string) {
     throw err;
   }
 }
+
+export async function deleteRoadmap(roadmapId: string) {
+  try {
+    const client = await clientPromise;
+    const db = client.db("prod");
+    const roadmapCol = db.collection<Roadmap>("roadmaps");
+    const lessonsCol = db.collection<Lesson>("lessons");
+
+    const roadmap = await roadmapCol.findOne({ _id: new ObjectId(roadmapId) });
+    const conceptsIds = roadmap?.sections.flatMap((section) =>
+      section.concepts.map((c) => c._id),
+    );
+
+    await lessonsCol.deleteMany({
+      conceptId: { $in: conceptsIds },
+    });
+
+    await roadmapCol.deleteOne({
+      _id: new ObjectId(roadmapId),
+    });
+
+    revalidatePath("/dashboard/roadmaps");
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+}

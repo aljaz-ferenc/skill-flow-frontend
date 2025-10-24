@@ -1,5 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import RoadmapDropdownMenu from "@/app/dashboard/roadmaps/_components/RoadmapDropdownMenu";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import type { Roadmap } from "@/lib/types";
@@ -13,9 +14,12 @@ export default function RoadmapCard({ roadmap }: RoadmapCardProps) {
   return (
     <Card className=" shadow-md hover:shadow-lg transition-shadow duration-300">
       <CardContent className="w-70">
-        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-          {roadmap.topic}
-        </h3>
+        <header className=" flex justify-between items-center">
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+            {roadmap.topic}
+          </h3>
+          <RoadmapDropdownMenu roadmapId={roadmap._id.toString()} />
+        </header>
         <p className="text-gray-600 dark:text-gray-400 mb-4 text-sm">
           description
         </p>
