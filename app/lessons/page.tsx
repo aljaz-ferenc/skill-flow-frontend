@@ -22,7 +22,7 @@ export default async function LessonsPage(props: PageProps<"/lessons">) {
   if (!lessonId) {
     const currentLesson = lessons.find((l) => l.status === "current");
     if (!currentLesson) {
-      console.log("no current lesson");
+      gotoLesson(lessons[0]._id);
       return;
     }
     gotoLesson(currentLesson._id);
@@ -33,13 +33,15 @@ export default async function LessonsPage(props: PageProps<"/lessons">) {
   const concept = section?.concepts.find((c) => c._id === conceptId);
 
   if (!section || !concept) throw new Error("Section or concept not found.");
+  const conceptIndex = section?.concepts.findIndex((c) => c._id === conceptId);
+  const nextConcept = section?.concepts[conceptIndex + 1] || null;
 
   const lessonsMeta = concept.lessons;
   if (!lessonsMeta || lessonsMeta.length === 0)
     throw new Error("No lessons found");
 
   return (
-    <main className="flex min-h-screen  max-w-screen overflow-x-hidden">
+    <main className="flex min-h-screen overflow-x-hidden">
       <aside className="p-2 flex flex-col justify-between bg-secondary">
         <h3 className="text-xl font-bold mb-2">{concept.title}</h3>
         <div>
@@ -82,7 +84,14 @@ export default async function LessonsPage(props: PageProps<"/lessons">) {
                   )}
                 />
               )}
-              <h4 className={cn("w-full")}>{lesson.title}</h4>
+              <h4
+                className={cn(
+                  "w-full",
+                  `text-${getStatusColor(lesson.status)}`,
+                )}
+              >
+                {lesson.title}
+              </h4>
             </Link>
           ))}
         </div>
@@ -101,6 +110,7 @@ export default async function LessonsPage(props: PageProps<"/lessons">) {
         conceptTitle={concept.title}
         roadmapTitle={roadmap.topic}
         sectionTitle={section.title}
+        nextConcept={nextConcept}
       />
     </main>
   );

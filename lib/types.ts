@@ -9,18 +9,14 @@ export type BaseExercise = {
 
 export type MCQExercise = BaseExercise & {
   type: "mcq";
-  exercise: {
-    question: string;
-    answer_options: string[];
-    answer_index: number;
-  };
+  question: string;
+  answer_options: string[];
+  answer_index: number;
 };
 
 export type QuestionExercise = BaseExercise & {
   type: "question";
-  exercise: {
-    question: string;
-  };
+  question: string;
 };
 
 export type Exercise = MCQExercise | QuestionExercise;
@@ -28,7 +24,7 @@ export type Exercise = MCQExercise | QuestionExercise;
 export type Lesson = {
   _id: string;
   content?: string;
-  exercise?: Exercise;
+  exercises?: Exercise[];
   conceptId: string;
   title: string;
   is_final: boolean;

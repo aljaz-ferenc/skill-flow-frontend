@@ -1,38 +1,164 @@
 "use client";
 
+import { ArrowLeft, CircleCheck, CircleX } from "lucide-react";
 import { useState } from "react";
 import MCQExercise from "@/app/lessons/_components/MCQExercise";
 import QuestionExercise from "@/app/lessons/_components/QuestionExercise";
-import type { Exercise } from "@/lib/types";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { completeLesson } from "@/lib/actions";
+import type { Exercise, Lesson } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 type ExerciseProps = {
-  exercise: Exercise;
-  lessonContent: string;
+  exercises: Exercise[];
+  lesson: Lesson;
   onAnswerCorrectAction: () => void;
+  onBackToLessonAction: () => void;
+  onNextLessonAction: () => void;
 };
 
 export default function ExerciseComponent({
-  exercise,
-  lessonContent,
+  exercises,
+  lesson,
   onAnswerCorrectAction,
+  onBackToLessonAction,
+  onNextLessonAction,
 }: ExerciseProps) {
-  const [clickedIndices, setClickedIndices] = useState<number[]>([]);
+  const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
+  const currentExercise = exercises[currentExerciseIndex];
+  const [results, setResults] = useState<boolean[]>([]);
+  const [exercisesCompleted, setExercisesCompleted] = useState(false);
+  const correctCount = results.filter((r) => Boolean(r)).length;
+  const resultPercentage = (correctCount / exercises.length) * 100;
+  const passTreshold = 70;
+  const passed = resultPercentage >= passTreshold;
 
-  if (exercise.type === "question") {
+  function onAnswer(isCorrect: boolean) {
+    setResults((prev) => [...prev, isCorrect]);
+  }
+
+  function onNextLesson() {
+    onNextLessonAction();
+    resetQuiz();
+  }
+
+  function resetQuiz() {
+    setCurrentExerciseIndex(0);
+    setResults([]);
+    setExercisesCompleted(false);
+  }
+
+  function onNextExercise() {
+    if (!exercises[currentExerciseIndex + 1]) {
+      setExercisesCompleted(true);
+      if (passed) {
+        completeLesson(lesson._id);
+      }
+
+      return;
+    }
+    setCurrentExerciseIndex((prev) => prev + 1);
+  }
+
+  if (exercisesCompleted) {
     return (
-      <QuestionExercise exercise={exercise} lessonContent={lessonContent} />
+      <>
+        <Button
+          onClick={onBackToLessonAction}
+          variant={"link"}
+          className="flex gap-2 items-center ml-auto mb-4"
+        >
+          <ArrowLeft />
+          Back to Lesson
+        </Button>
+        <Card
+          className={cn(
+            "border border-transparent",
+            passed
+              ? "bg-green-100 border-green-500"
+              : "bg-red-100 border-red-500",
+          )}
+        >
+          <CardContent>
+            <CardTitle className="flex gap-4 items-center">
+              {passed ? (
+                <CircleCheck size={30} color="green" />
+              ) : (
+                <CircleX size={30} color="red" />
+              )}
+              <div>
+                <p className="text-xl">
+                  {passed ? "Congratulations!" : "Keep learning!"}
+                </p>
+                <p className="text-muted-foreground font-light text-sm">
+                  You scored {correctCount} out of {exercises.length} (
+                  {Math.round(resultPercentage)}%)
+                </p>
+              </div>
+            </CardTitle>
+            {passed ? (
+              <p className="mt-6 text-base text-muted-foreground">
+                Great job! You've demonstrated a solid understanding of the
+                lesson <strong>{lesson.title}</strong>. You can now move on to
+                the next lesson.
+              </p>
+            ) : (
+              <p className="mt-6 text-base text-muted-foreground">
+                You need at least <strong>{passTreshold}%</strong> to pass.
+                Review the lesson content and try again to strengthen your
+                understanding.
+              </p>
+            )}
+          </CardContent>
+        </Card>
+        {passed ? (
+          <Button className="mt-4" onClick={onNextLesson}>
+            {lesson.is_final ? "Unlock Next Section" : "Next Lesson"}
+          </Button>
+        ) : (
+          <Button className="mt-4" onClick={resetQuiz}>
+            Retake Quiz
+          </Button>
+        )}
+      </>
     );
   }
 
-  if (exercise.type === "mcq") {
-    return (
-      <MCQExercise
-        onAnswerCorrect={onAnswerCorrectAction}
-        exercise={exercise}
-        setClickedIndices={setClickedIndices}
-        clickedIndices={clickedIndices}
-      />
-    );
-  }
-  return null;
+  return (
+    <>
+      <div className="flex justify-between">
+        <Badge className="h-6">
+          Question {currentExerciseIndex + 1} of {exercises.length}
+        </Badge>
+        <Button
+          onClick={onBackToLessonAction}
+          variant={"link"}
+          className="flex gap-2 items-center"
+        >
+          <ArrowLeft />
+          Back to Lesson
+        </Button>
+      </div>
+      {currentExercise.type === "question" && (
+        <QuestionExercise
+          exercise={currentExercise}
+          lesson={lesson}
+          onAnswerCorrectAction={onAnswerCorrectAction}
+          onNextExerciseAction={onNextExercise}
+          onAnswerAction={onAnswer}
+        />
+      )}
+
+      {currentExercise.type === "mcq" && (
+        <MCQExercise
+          onAnswerAction={onAnswer}
+          onAnswerCorrect={onAnswerCorrectAction}
+          exercise={currentExercise}
+          onNextExerciseAction={onNextExercise}
+        />
+      )}
+    </>
+  );
 }

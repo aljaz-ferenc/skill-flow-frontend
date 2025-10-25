@@ -29,6 +29,25 @@ export async function getRoadmap(roadmapId: string) {
   }
 }
 
+export async function unlockLesson(lessonId: string) {
+  console.log("Unlocking lesson...");
+  try {
+    const client = await clientPromise;
+    const db = client.db("prod");
+    const lessonsCol = db.collection<Lesson>("lessons");
+
+    await lessonsCol.findOneAndUpdate(
+      { _id: lessonId },
+      { $set: { status: "current" } },
+    );
+
+    revalidatePath('/lessons')
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+}
+
 export async function generateLesson(body: {
   roadmapId: string;
   conceptId: string;
@@ -38,6 +57,7 @@ export async function generateLesson(body: {
   lessonId: string;
 }) {
   try {
+    console.log("Generating lesson...");
     const res = await fetch("http://127.0.0.1:8000/lesson", {
       method: "POST",
       headers: {
@@ -70,7 +90,7 @@ export async function getLessonsByConceptId(conceptId: string) {
     return lessonDocs.map((doc) => ({
       _id: doc._id.toString(),
       content: doc.content,
-      exercise: doc.exercise,
+      exercises: doc.exercises,
       conceptId: doc.conceptId,
       title: doc.title,
       status: doc.status,
@@ -89,6 +109,7 @@ export async function checkAnswer(payload: {
   answer: string;
   lessonContent: string;
 }): Promise<AnswerResult> {
+  console.log("checking answer");
   try {
     const res = await fetch("http://127.0.0.1:8000/check-answer", {
       method: "POST",
@@ -99,10 +120,12 @@ export async function checkAnswer(payload: {
     });
 
     if (!res.ok) {
-      throw new Error("Error checking answer");
+      throw new Error(`Error checking answer: ${await res.text()}`);
     }
 
-    return await res.json();
+    const answerResult: AnswerResult = await res.json();
+
+    return answerResult;
   } catch (err) {
     console.error(err);
     throw new Error("Error checking answer");
@@ -160,6 +183,7 @@ export async function completeLesson(lessonId: string) {
       },
       { returnDocument: "after" },
     );
+    console.log("UPDATED LESSON: ", updatedLesson);
     revalidatePath("/lessons");
     return JSON.parse(JSON.stringify(updatedLesson)) as Lesson;
   } catch (err) {
@@ -191,6 +215,99 @@ export async function deleteRoadmap(roadmapId: string) {
     revalidatePath("/dashboard/roadmaps");
   } catch (err) {
     console.error(err);
+    throw err;
+  }
+}
+
+export async function planLessons(payload: {roadmap_topic: string, roadmap_id: string,  section_title: string, concept_title: string, concept_id: string, section_id: string}){
+    try{
+        const res = await fetch("http://127.0.0.1:8000/plan-lessons", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        })
+
+        if(!res.ok){
+            throw new Error(`Error planning lessons: ${await res.text()}`)
+        }
+        console.log(await res.json())
+    }catch (err){
+        console.error(`Error planning lessons: ${err}`)
+        throw err
+    }
+}
+
+export async function unlockConcept({
+  conceptId,
+  sectionId,
+  roadmapId,
+}: {
+  conceptId: string;
+  sectionId: string;
+  roadmapId: string;
+}) {
+  try {
+    const client = await clientPromise;
+    const db = client.db("prod");
+    const roadmapCol = db.collection<Roadmap>("roadmaps");
+
+    const updatedRoadmap = await roadmapCol.findOneAndUpdate(
+      { _id: new ObjectId(roadmapId) },
+      {
+        $set: {
+          "sections.$[section].concepts.$[concept].status": "current",
+        },
+      },
+      {
+        arrayFilters: [
+          { "section._id": sectionId },
+          { "concept._id": conceptId },
+        ],
+        returnDocument: "after",
+      },
+    );
+
+    return JSON.parse(JSON.stringify(updatedRoadmap));
+  } catch (err) {
+    console.error("Error unlocking concept", err);
+    throw err;
+  }
+}
+
+export async function completeConcept({
+  conceptId,
+  sectionId,
+  roadmapId,
+}: {
+  conceptId: string;
+  sectionId: string;
+  roadmapId: string;
+}) {
+  try {
+    const client = await clientPromise;
+    const db = client.db("prod");
+    const roadmapCol = db.collection<Roadmap>("roadmaps");
+
+    const updatedRoadmap = await roadmapCol.findOneAndUpdate(
+      { _id: new ObjectId(roadmapId) },
+      {
+        $set: {
+          "sections.$[section].concepts.$[concept].status": "completed",
+        },
+      },
+      {
+        arrayFilters: [
+          { "section._id": sectionId },
+          { "concept._id": conceptId },
+        ],
+        returnDocument: "after",
+      },
+    );
+    return JSON.parse(JSON.stringify(updatedRoadmap));
+  } catch (err) {
+    console.error("Error unlocking concept", err);
     throw err;
   }
 }

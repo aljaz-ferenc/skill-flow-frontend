@@ -23,10 +23,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+    <a href='https://cloud.mongodb.com/v2/68f224c7777084438f6148e4#/metrics/replicaSet/68f224f97e890959670e0f86/explorer/prod/lessons/find'>MongoDB</a>
         {children}
       </body>
     </html>

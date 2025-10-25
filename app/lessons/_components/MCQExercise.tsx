@@ -1,63 +1,107 @@
-import type { Dispatch, SetStateAction } from "react";
+import { useState } from "react";
+import Markdown from "react-markdown";
+import rehypePrism from "rehype-prism-plus";
+import remarkGfm from "remark-gfm";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import type { Exercise } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 type MCQExerciseProps = {
   exercise: Exercise;
-  clickedIndices: number[];
-  setClickedIndices: Dispatch<SetStateAction<number[]>>;
   onAnswerCorrect: () => void;
+  onAnswerAction: (isCorrect: boolean) => void;
+  onNextExerciseAction: () => void;
 };
 
 export default function MCQExercise({
   exercise,
-  clickedIndices,
-  setClickedIndices,
-  onAnswerCorrect,
+  onAnswerAction,
+  onNextExerciseAction,
 }: MCQExerciseProps) {
+  const [selectedIndex, setSelectedIndex] = useState<null | number>(null);
+  const [answerIndex, setAnswerIndex] = useState<null | number>(null);
   if (exercise.type !== "mcq") return;
 
-  function onGuess(answerIndex: number) {
-    if (exercise.type === "mcq") {
-      const isCorrect = answerIndex === exercise.exercise.answer_index;
-      setClickedIndices((prev) => Array.from(new Set([...prev, answerIndex])));
+  const isGuessCorrect = selectedIndex === exercise.answer_index;
 
-      if (isCorrect) {
-        onAnswerCorrect();
-      }
+  function onCheckAnswer() {
+    if (exercise.type === "mcq") {
+      setAnswerIndex(selectedIndex);
+      onAnswerAction(isGuessCorrect);
     }
   }
 
+  function onNextExercise() {
+    onNextExerciseAction();
+    setAnswerIndex(null);
+    setSelectedIndex(null);
+  }
+
   return (
-    <article className="h-full flex items-center max-w-xl">
-      <div className="h-min">
-        <h4 className="mb-8 text-xl text-center">
-          {exercise.exercise.question}
-        </h4>
-        <div className="flex flex-col gap-2">
-          {exercise.exercise.answer_options.map((option, index) => (
-            <Button
-              type="button"
-              className={cn(
-                "cursor-pointer",
-
-                clickedIndices.includes(index) &&
-                  "bg-destructive pointer-events-none",
-
-                clickedIndices.includes(index) &&
-                  index === exercise.exercise.answer_index &&
-                  "bg-green-500 pointer-events-none",
-              )}
-              key={option}
-              variant="secondary"
-              onClick={() => onGuess(index)}
-            >
-              {option}
-            </Button>
-          ))}
-        </div>
-      </div>
+    <article className="h-full flex items-center max-w-4xl mx-auto flex-col gap-4">
+      <Card className="h-min mx-auto w-full mt-12">
+        <CardContent>
+          <span className="text-lg font-semibold prose dark:prose-invert">
+            <Markdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypePrism]}>
+              {exercise.question}
+            </Markdown>
+          </span>
+          <p className="text-muted-foreground mb-4">
+            Select the correct answer
+          </p>
+          <div className="flex flex-col gap-2">
+            {exercise.answer_options.map((option, index) => (
+              <div key={option}>
+                <Label
+                  className={cn(
+                    "border text-md p-2 rounded border-transparent hover:bg-muted cursor-pointer",
+                    answerIndex !== null &&
+                      isGuessCorrect &&
+                      index === answerIndex &&
+                      "bg-green-100 border-green-500",
+                    answerIndex !== null &&
+                      !isGuessCorrect &&
+                      index === answerIndex &&
+                      "bg-red-100 border-red-500",
+                    answerIndex !== null &&
+                      index === exercise.answer_index &&
+                      "bg-green-100 border-green-500",
+                  )}
+                >
+                  <Checkbox
+                    checked={selectedIndex === index}
+                    onCheckedChange={() => setSelectedIndex(index)}
+                    className="bg-white mr-2"
+                    disabled={answerIndex !== null}
+                  />
+                  <Markdown
+                    remarkPlugins={[remarkGfm]}
+                    rehypePlugins={[rehypePrism]}
+                  >
+                    {option}
+                  </Markdown>
+                </Label>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+      {answerIndex === null ? (
+        <Button
+          onClick={onCheckAnswer}
+          className="self-start cursor-pointer"
+          disabled={selectedIndex === null}
+        >
+          Check Answer
+        </Button>
+      ) : (
+        <Button onClick={onNextExercise} className="self-start cursor-pointer">
+          Next Exercise
+        </Button>
+      )}
     </article>
   );
 }

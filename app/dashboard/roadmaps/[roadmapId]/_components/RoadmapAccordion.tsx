@@ -60,13 +60,12 @@ export default function RoadmapAccordion({
           <AccordionContent>
             <ul className="flex flex-col">
               <hr className="mb-3" />
-              {section.concepts.map((concept, index) => {
-                const status = index === 0 ? "current" : "locked";
+              {section.concepts.map((concept) => {
                 return (
                   <Link
                     href={
-                      status === "locked"
-                        ? `/dashboard/roadmaps/${roadmapId}/sections/${section._id}/concepts/${concept._id}`
+                      concept.status === "locked"
+                        ? `/dashboard/roadmaps/${roadmapId}`
                         : `/lessons?roadmapId=${roadmapId}&sectionId=${section._id}&conceptId=${concept._id}`
                     }
                     className={cn(
@@ -146,5 +145,5 @@ function ConceptStatusIndicator({ status }: ConceptStatusIndicatorProps) {
   if (status === "current")
     return <PlayCircle className="text-amber-400" size={16} />;
 
-  return <CheckCircle />;
+  return <CheckCircle size={16} />;
 }
