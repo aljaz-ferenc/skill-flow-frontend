@@ -7,7 +7,6 @@ import QuestionExercise from "@/app/lessons/_components/QuestionExercise";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import { completeLesson } from "@/lib/actions";
 import type { Exercise, Lesson } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -53,9 +52,9 @@ export default function ExerciseComponent({
   function onNextExercise() {
     if (!exercises[currentExerciseIndex + 1]) {
       setExercisesCompleted(true);
-      if (passed) {
-        completeLesson(lesson._id);
-      }
+      // if (passed) {
+      //   completeLesson(lesson._id);
+      // }
 
       return;
     }
@@ -128,7 +127,7 @@ export default function ExerciseComponent({
 
   return (
     <>
-      <div className="flex justify-between">
+      <div className="flex justify-between max-w-4xl mx-auto">
         <Badge className="h-6">
           Question {currentExerciseIndex + 1} of {exercises.length}
         </Badge>

@@ -15,14 +15,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  completeConcept,
-  completeLesson,
-  generateLesson,
-  planLessons,
-  unlockConcept,
-  unlockLesson,
+    completeConcept,
+    completeLesson,
+    generateLesson,
+    planLessons,
+    unlockConcept,
+    unlockLesson, unlockSection,
 } from "@/lib/actions";
-import type { ConceptMeta, Lesson as TLesson } from "@/lib/types";
+import type {ConceptMeta, Lesson as TLesson, Section} from "@/lib/types";
 
 type LessonProps = {
   lessons: TLesson[];
@@ -30,6 +30,7 @@ type LessonProps = {
   sectionTitle: string;
   conceptTitle: string;
   nextConcept: ConceptMeta | null;
+  nextSection: Section
 };
 
 export default function Lesson({
@@ -38,6 +39,7 @@ export default function Lesson({
   roadmapTitle,
   sectionTitle,
   nextConcept,
+    nextSection
 }: LessonProps) {
   const [type, setType] = useState<"lesson" | "exercise">("lesson");
   const [isGenerating, setIsGenerating] = useState(false);
@@ -56,10 +58,10 @@ export default function Lesson({
 
   async function onNextLesson() {
     const nextLessonIndex = lessons.findIndex((l) => l._id === lessonId) + 1;
+        await completeLesson(lessonId)
     if (nextLessonIndex < 0 || !lessons[currentIndex + 1]?._id) {
+        await completeConcept({ roadmapId, sectionId, conceptId });
       if (nextConcept) {
-        completeConcept({ roadmapId, sectionId, conceptId });
-        if (!nextConcept) return; //TODO: unlock next section if just finished last concept in current section
         await planLessons({
           roadmap_topic: roadmapTitle,
           section_title: sectionTitle,
@@ -74,7 +76,9 @@ export default function Lesson({
           sectionId,
         });
       } else {
-        /// unlock next section
+          if(!nextSection) throw new Error("Roadmap complete, no new section to unlock")
+         await unlockSection({roadmapId, sectionId: nextSection._id})
+          await unlockConcept({roadmapId, sectionId: nextSection._id, conceptId: nextSection.concepts[0]._id})
       }
       return router.push(`/dashboard/roadmaps/${roadmapId}`);
     }
@@ -85,10 +89,8 @@ export default function Lesson({
   }
 
   useEffect(() => {
-    // If we're already generating or have content, do nothing
     if (isGenerating || currentLesson?.content) return;
 
-    // If we have a lessonId but no content, generate for that specific lesson
     if (lessonId && !currentLesson?.content) {
       setIsGenerating(true);
       generateLesson({
@@ -144,8 +146,8 @@ export default function Lesson({
     roadmapId,
     router,
     sectionId,
-    isGenerating, // Add this dependency
-    currentLesson?.content, // Add this dependency
+    isGenerating,
+    currentLesson?.content,
   ]);
 
   useEffect(() => {
@@ -157,7 +159,7 @@ export default function Lesson({
 
   async function onAnswerCorrect() {
     const currentIndex = lessons.findIndex((l) => l._id === currentLesson?._id);
-    await completeLesson(lessonId);
+    // await completeLesson(lessonId);
     router.refresh();
 
     if (currentIndex < lessons.length - 1) {
@@ -206,7 +208,7 @@ export default function Lesson({
               </span>
               <Button variant={"link"} onClick={onBack}>
                 <ArrowLeft />
-                Back
+                Back to Roadmap
               </Button>
             </div>
             {type === "lesson" ? (

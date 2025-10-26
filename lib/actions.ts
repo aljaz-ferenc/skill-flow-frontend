@@ -41,7 +41,7 @@ export async function unlockLesson(lessonId: string) {
       { $set: { status: "current" } },
     );
 
-    revalidatePath('/lessons')
+    revalidatePath("/lessons");
   } catch (err) {
     console.error(err);
     throw err;
@@ -169,6 +169,7 @@ export async function getLessonById(lessonId: string) {
 }
 
 export async function completeLesson(lessonId: string) {
+    console.log(`Completing lesson: ${lessonId}`)
   try {
     const client = await clientPromise;
     const db = client.db("prod");
@@ -183,7 +184,9 @@ export async function completeLesson(lessonId: string) {
       },
       { returnDocument: "after" },
     );
-    console.log("UPDATED LESSON: ", updatedLesson);
+
+    console.log("UPDATED_LESSON: ", updatedLesson)
+
     revalidatePath("/lessons");
     return JSON.parse(JSON.stringify(updatedLesson)) as Lesson;
   } catch (err) {
@@ -219,24 +222,31 @@ export async function deleteRoadmap(roadmapId: string) {
   }
 }
 
-export async function planLessons(payload: {roadmap_topic: string, roadmap_id: string,  section_title: string, concept_title: string, concept_id: string, section_id: string}){
-    try{
-        const res = await fetch("http://127.0.0.1:8000/plan-lessons", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        })
+export async function planLessons(payload: {
+  roadmap_topic: string;
+  roadmap_id: string;
+  section_title: string;
+  concept_title: string;
+  concept_id: string;
+  section_id: string;
+}) {
+  try {
+    const res = await fetch("http://127.0.0.1:8000/plan-lessons", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
 
-        if(!res.ok){
-            throw new Error(`Error planning lessons: ${await res.text()}`)
-        }
-        console.log(await res.json())
-    }catch (err){
-        console.error(`Error planning lessons: ${err}`)
-        throw err
+    if (!res.ok) {
+      throw new Error(`Error planning lessons: ${await res.text()}`);
     }
+    console.log(await res.json());
+  } catch (err) {
+    console.error(`Error planning lessons: ${err}`);
+    throw err;
+  }
 }
 
 export async function unlockConcept({
@@ -286,6 +296,7 @@ export async function completeConcept({
   roadmapId: string;
 }) {
   try {
+      console.log('Completing concept...')
     const client = await clientPromise;
     const db = client.db("prod");
     const roadmapCol = db.collection<Roadmap>("roadmaps");
@@ -310,4 +321,26 @@ export async function completeConcept({
     console.error("Error unlocking concept", err);
     throw err;
   }
+}
+
+
+export async function unlockSection({roadmapId, sectionId}:{roadmapId: string, sectionId: string}){
+    try{
+        const client = await clientPromise
+        const db = client.db('prod')
+        const roadmapsCol = db.collection<Roadmap>('roadmaps')
+
+        await roadmapsCol.findOneAndUpdate({_id: new ObjectId(roadmapId)}, {
+            $set: {
+                "sections.$[section].status": 'current'
+            }
+        }, {arrayFilters: [
+                {'section._id': sectionId}
+            ]})
+
+        revalidatePath(`/dashboard/roadmaps/${roadmapId}`)
+    }catch (err){
+        console.error(`Error unlocking section: ${err}`)
+        throw err
+    }
 }
