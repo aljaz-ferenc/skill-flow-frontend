@@ -36,8 +36,8 @@ export default async function LessonsPage(props: PageProps<"/lessons">) {
   const conceptIndex = section?.concepts.findIndex((c) => c._id === conceptId);
   const nextConcept = section?.concepts[conceptIndex + 1] || null;
 
-  const sectionIndex = roadmap.sections.findIndex(s => s._id === sectionId)
-    const nextSection = roadmap.sections[sectionIndex + 1]
+  const sectionIndex = roadmap.sections.findIndex((s) => s._id === sectionId);
+  const nextSection = roadmap.sections[sectionIndex + 1];
 
   const lessonsMeta = concept.lessons;
   if (!lessonsMeta || lessonsMeta.length === 0)

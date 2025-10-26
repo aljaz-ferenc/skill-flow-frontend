@@ -15,14 +15,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-    completeConcept,
-    completeLesson,
-    generateLesson,
-    planLessons,
-    unlockConcept,
-    unlockLesson, unlockSection,
+  completeConcept,
+  completeLesson,
+  generateLesson,
+  planLessons,
+  unlockConcept,
+  unlockLesson,
+  unlockSection,
 } from "@/lib/actions";
-import type {ConceptMeta, Lesson as TLesson, Section} from "@/lib/types";
+import type { ConceptMeta, Lesson as TLesson, Section } from "@/lib/types";
 
 type LessonProps = {
   lessons: TLesson[];
@@ -30,7 +31,7 @@ type LessonProps = {
   sectionTitle: string;
   conceptTitle: string;
   nextConcept: ConceptMeta | null;
-  nextSection: Section
+  nextSection: Section;
 };
 
 export default function Lesson({
@@ -39,7 +40,7 @@ export default function Lesson({
   roadmapTitle,
   sectionTitle,
   nextConcept,
-    nextSection
+  nextSection,
 }: LessonProps) {
   const [type, setType] = useState<"lesson" | "exercise">("lesson");
   const [isGenerating, setIsGenerating] = useState(false);
@@ -58,9 +59,9 @@ export default function Lesson({
 
   async function onNextLesson() {
     const nextLessonIndex = lessons.findIndex((l) => l._id === lessonId) + 1;
-        await completeLesson(lessonId)
+    await completeLesson(lessonId);
     if (nextLessonIndex < 0 || !lessons[currentIndex + 1]?._id) {
-        await completeConcept({ roadmapId, sectionId, conceptId });
+      await completeConcept({ roadmapId, sectionId, conceptId });
       if (nextConcept) {
         await planLessons({
           roadmap_topic: roadmapTitle,
@@ -76,9 +77,14 @@ export default function Lesson({
           sectionId,
         });
       } else {
-          if(!nextSection) throw new Error("Roadmap complete, no new section to unlock")
-         await unlockSection({roadmapId, sectionId: nextSection._id})
-          await unlockConcept({roadmapId, sectionId: nextSection._id, conceptId: nextSection.concepts[0]._id})
+        if (!nextSection)
+          throw new Error("Roadmap complete, no new section to unlock");
+        await unlockSection({ roadmapId, sectionId: nextSection._id });
+        await unlockConcept({
+          roadmapId,
+          sectionId: nextSection._id,
+          conceptId: nextSection.concepts[0]._id,
+        });
       }
       return router.push(`/dashboard/roadmaps/${roadmapId}`);
     }

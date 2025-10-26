@@ -169,7 +169,7 @@ export async function getLessonById(lessonId: string) {
 }
 
 export async function completeLesson(lessonId: string) {
-    console.log(`Completing lesson: ${lessonId}`)
+  console.log(`Completing lesson: ${lessonId}`);
   try {
     const client = await clientPromise;
     const db = client.db("prod");
@@ -185,7 +185,7 @@ export async function completeLesson(lessonId: string) {
       { returnDocument: "after" },
     );
 
-    console.log("UPDATED_LESSON: ", updatedLesson)
+    console.log("UPDATED_LESSON: ", updatedLesson);
 
     revalidatePath("/lessons");
     return JSON.parse(JSON.stringify(updatedLesson)) as Lesson;
@@ -296,7 +296,7 @@ export async function completeConcept({
   roadmapId: string;
 }) {
   try {
-      console.log('Completing concept...')
+    console.log("Completing concept...");
     const client = await clientPromise;
     const db = client.db("prod");
     const roadmapCol = db.collection<Roadmap>("roadmaps");
@@ -323,24 +323,31 @@ export async function completeConcept({
   }
 }
 
+export async function unlockSection({
+  roadmapId,
+  sectionId,
+}: {
+  roadmapId: string;
+  sectionId: string;
+}) {
+  try {
+    const client = await clientPromise;
+    const db = client.db("prod");
+    const roadmapsCol = db.collection<Roadmap>("roadmaps");
 
-export async function unlockSection({roadmapId, sectionId}:{roadmapId: string, sectionId: string}){
-    try{
-        const client = await clientPromise
-        const db = client.db('prod')
-        const roadmapsCol = db.collection<Roadmap>('roadmaps')
+    await roadmapsCol.findOneAndUpdate(
+      { _id: new ObjectId(roadmapId) },
+      {
+        $set: {
+          "sections.$[section].status": "current",
+        },
+      },
+      { arrayFilters: [{ "section._id": sectionId }] },
+    );
 
-        await roadmapsCol.findOneAndUpdate({_id: new ObjectId(roadmapId)}, {
-            $set: {
-                "sections.$[section].status": 'current'
-            }
-        }, {arrayFilters: [
-                {'section._id': sectionId}
-            ]})
-
-        revalidatePath(`/dashboard/roadmaps/${roadmapId}`)
-    }catch (err){
-        console.error(`Error unlocking section: ${err}`)
-        throw err
-    }
+    revalidatePath(`/dashboard/roadmaps/${roadmapId}`);
+  } catch (err) {
+    console.error(`Error unlocking section: ${err}`);
+    throw err;
+  }
 }
