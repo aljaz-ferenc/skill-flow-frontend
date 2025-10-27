@@ -38,6 +38,8 @@ export type LessonMeta = {
   description: string;
   learning_objectives: string[];
   status: "locked" | "current" | "completed";
+  conceptId: string
+    _id: ObjectId
 };
 
 export type ConceptMeta = {

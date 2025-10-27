@@ -4,6 +4,7 @@ import { ArrowLeft, Clock } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Markdown from "react-markdown";
+import { PuffLoader } from "react-spinners";
 import rehypePrism from "rehype-prism-plus";
 import remarkGfm from "remark-gfm";
 import ExerciseComponent from "@/app/lessons/_components/Exercise";
@@ -23,7 +24,7 @@ import {
   unlockLesson,
   unlockSection,
 } from "@/lib/actions";
-import type { ConceptMeta, Lesson as TLesson, Section } from "@/lib/types";
+import type { ConceptMeta, Section, Lesson as TLesson } from "@/lib/types";
 
 type LessonProps = {
   lessons: TLesson[];
@@ -52,6 +53,8 @@ export default function Lesson({
   const lessonId = params.get("lessonId") as string;
   const currentLesson = lessons.find((l) => l._id === lessonId);
   const currentIndex = lessons.findIndex((l) => l._id === currentLesson?._id);
+  const isFinal =
+    lessons.findIndex((l) => l._id === lessonId) === lessons.length - 1;
 
   function onBack() {
     router.push(`/dashboard/roadmaps/${roadmapId}`);
@@ -94,10 +97,12 @@ export default function Lesson({
     );
   }
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: explanation
   useEffect(() => {
     if (isGenerating || currentLesson?.content) return;
 
     if (lessonId && !currentLesson?.content) {
+      console.log("GENERATING LESSON: ", lessonId, currentLesson?.content);
       setIsGenerating(true);
       generateLesson({
         conceptTitle,
@@ -106,53 +111,22 @@ export default function Lesson({
         conceptId,
         sectionTitle,
         lessonId,
-      })
-        .then((lesson) => {
-          if (!lesson?.lesson_id) return;
-          unlockLesson(lesson.lesson_id);
-        })
-        .finally(() => setIsGenerating(false));
+      }).then((lesson) => {
+        if (!lesson?.lesson_id) return;
+        return unlockLesson(lesson.lesson_id).finally(() =>
+          setIsGenerating(false),
+        );
+      });
+
       return;
     }
-
-    // If no current lesson with content, find the first locked lesson
-    const current = lessons.find((l) => l.status === "current");
-    if (!current || !current.content) {
-      const firstLockedLesson = lessons.find((l) => l.status === "locked");
-
-      if (!firstLockedLesson) {
-        router.push(
-          `/lessons?roadmapId=${roadmapId}&sectionId=${sectionId}&conceptId=${conceptId}&lessonId=${lessons[0]._id}`,
-        );
-        return;
-      }
-
-      setIsGenerating(true);
-      generateLesson({
-        conceptTitle,
-        roadmapTitle,
-        roadmapId,
-        conceptId,
-        sectionTitle,
-        lessonId: firstLockedLesson._id.toString(),
-      })
-        .then((lesson) => {
-          if (!lesson?.lesson_id) return;
-          unlockLesson(lesson.lesson_id);
-        })
-        .finally(() => setIsGenerating(false));
-    }
   }, [
-    lessons,
     conceptTitle,
     lessonId,
     conceptId,
     sectionTitle,
     roadmapTitle,
     roadmapId,
-    router,
-    sectionId,
-    isGenerating,
     currentLesson?.content,
   ]);
 
@@ -178,13 +152,27 @@ export default function Lesson({
           conceptId,
           sectionTitle,
           lessonId: lessons[currentIndex + 1]._id.toString(),
-        }).finally(() => setIsGenerating(false));
+        }).finally(() => {
+          setType("lesson");
+          setIsGenerating(false);
+        });
       } else {
         router.push(
           `/lessons?roadmapId=${roadmapId}&sectionId=${sectionId}&conceptId=${conceptId}&lessonId=${lessons[currentIndex + 1]._id}`,
         );
       }
     }
+  }
+
+  if (isGenerating) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen w-full">
+        <PuffLoader color="var(--color-primary)" />
+        <p className="mt-4 text-sm text-muted-foreground font-bold animate-pulse">
+          Generating lesson...
+        </p>
+      </div>
+    );
   }
 
   if (!currentLesson?.exercises || !currentLesson.content) return;
@@ -196,73 +184,71 @@ export default function Lesson({
 
   return (
     <div className=" max-w-screen w-full mx-auto h-screen pb-12 py-12 flex flex-col justify-between p-3 bg-background  max-h-screen overflow-y-auto">
-      {!isGenerating ? (
-        <div className=" h-full w-full  max-w-7xl mx-auto">
-          <section>
-            <h3 className="text-muted-foreground mb-1">{roadmapTitle}</h3>
-            <h4 className="text-3xl font-bold mb-4">{conceptTitle}</h4>
-            <div className="flex gap-1 items-center justify-between text-muted-foreground mb-6">
-              <span className="flex items-center gap-2">
-                <Clock size={15} />
-                <p>
-                  {getReadingTime(
-                    currentLesson.content,
-                    currentLesson.exercises.length,
-                  )}{" "}
-                  min
-                </p>
-              </span>
-              <Button variant={"link"} onClick={onBack}>
-                <ArrowLeft />
-                Back to Roadmap
-              </Button>
-            </div>
-            {type === "lesson" ? (
-              <>
-                <Card className="dark:prose-invert prose max-w-7xl mx-auto">
-                  <CardContent className="">
-                    <Markdown
-                      remarkPlugins={[remarkGfm]}
-                      rehypePlugins={[rehypePrism]}
+      <div className=" h-full w-full  max-w-7xl mx-auto">
+        <section>
+          <h3 className="text-muted-foreground mb-1">{roadmapTitle}</h3>
+          <h4 className="text-3xl font-bold mb-4">{conceptTitle}</h4>
+          <div className="flex gap-1 items-center justify-between text-muted-foreground mb-6">
+            <span className="flex items-center gap-2">
+              <Clock size={15} />
+              <p>
+                {getReadingTime(
+                  currentLesson.content,
+                  currentLesson.exercises.length,
+                )}{" "}
+                min
+              </p>
+            </span>
+            <Button variant={"link"} onClick={onBack}>
+              <ArrowLeft />
+              Back to Roadmap
+            </Button>
+          </div>
+          {type === "lesson" ? (
+            <>
+              <Card className="dark:prose-invert prose max-w-7xl mx-auto pt-0">
+                <CardContent className="">
+                  <Markdown
+                    remarkPlugins={[remarkGfm]}
+                    rehypePlugins={[rehypePrism]}
+                  >
+                    {currentLesson.content}
+                  </Markdown>
+                </CardContent>
+              </Card>
+              {currentLesson.status === "current" && (
+                <Card className="mt-14 max-w-7xl mx-auto">
+                  <CardContent>
+                    <CardTitle className="mb-1">
+                      Ready to Test Your Knowledge?
+                    </CardTitle>
+                    <CardDescription className="mb-4">
+                      Complete the quiz to verify your understanding and mark
+                      this lesson as complete.
+                    </CardDescription>
+                    <Button
+                      className="cursor-pointer"
+                      onClick={() => setType("exercise")}
                     >
-                      {currentLesson.content}
-                    </Markdown>
+                      Start Quiz
+                    </Button>
                   </CardContent>
                 </Card>
-                {currentLesson.status === "current" && (
-                  <Card className="mt-14 max-w-7xl mx-auto">
-                    <CardContent>
-                      <CardTitle className="mb-1">
-                        Ready to Test Your Knowledge?
-                      </CardTitle>
-                      <CardDescription className="mb-4">
-                        Complete the quiz to verify your understanding and mark
-                        this lesson as complete.
-                      </CardDescription>
-                      <Button
-                        className="cursor-pointer"
-                        onClick={() => setType("exercise")}
-                      >
-                        Start Quiz
-                      </Button>
-                    </CardContent>
-                  </Card>
-                )}
-              </>
-            ) : (
-              <ExerciseComponent
-                onAnswerCorrectAction={onAnswerCorrect}
-                exercises={currentLesson.exercises}
-                lesson={currentLesson}
-                onBackToLessonAction={() => setType("lesson")}
-                onNextLessonAction={onNextLesson}
-              />
-            )}
-          </section>
-        </div>
-      ) : (
-        <div>Generating Lesson...</div>
-      )}
+              )}
+            </>
+          ) : (
+            <ExerciseComponent
+              onAnswerCorrectAction={onAnswerCorrect}
+              exercises={currentLesson.exercises}
+              lesson={currentLesson}
+              onBackToLessonAction={() => setType("lesson")}
+              onNextLessonAction={onNextLesson}
+              isLessonFinal={isFinal}
+            />
+          )}
+        </section>
+      </div>
+      )
     </div>
   );
 }

@@ -16,6 +16,7 @@ type ExerciseProps = {
   onAnswerCorrectAction: () => void;
   onBackToLessonAction: () => void;
   onNextLessonAction: () => void;
+  isLessonFinal: boolean;
 };
 
 export default function ExerciseComponent({
@@ -24,6 +25,7 @@ export default function ExerciseComponent({
   onAnswerCorrectAction,
   onBackToLessonAction,
   onNextLessonAction,
+  isLessonFinal,
 }: ExerciseProps) {
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const currentExercise = exercises[currentExerciseIndex];
@@ -33,6 +35,7 @@ export default function ExerciseComponent({
   const resultPercentage = (correctCount / exercises.length) * 100;
   const passTreshold = 70;
   const passed = resultPercentage >= passTreshold;
+  console.log("CURRENT EXERCISE INDEX: ", currentExerciseIndex);
 
   function onAnswer(isCorrect: boolean) {
     setResults((prev) => [...prev, isCorrect]);
@@ -114,7 +117,7 @@ export default function ExerciseComponent({
         </Card>
         {passed ? (
           <Button className="mt-4" onClick={onNextLesson}>
-            {lesson.is_final ? "Unlock Next Section" : "Next Lesson"}
+            {isLessonFinal ? "Unlock Next Section" : "Next Lesson"}
           </Button>
         ) : (
           <Button className="mt-4" onClick={resetQuiz}>
