@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Clock } from "lucide-react";
+import { AlertCircle, ArrowLeft, Clock } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Markdown from "react-markdown";
@@ -55,6 +55,7 @@ export default function Lesson({
   const currentIndex = lessons.findIndex((l) => l._id === currentLesson?._id);
   const isFinal =
     lessons.findIndex((l) => l._id === lessonId) === lessons.length - 1;
+  const [error, setError] = useState("");
 
   function onBack() {
     router.push(`/dashboard/roadmaps/${roadmapId}`);
@@ -62,7 +63,9 @@ export default function Lesson({
 
   async function onNextLesson() {
     const nextLessonIndex = lessons.findIndex((l) => l._id === lessonId) + 1;
+    setIsGenerating(true);
     await completeLesson(lessonId);
+
     if (nextLessonIndex < 0 || !lessons[currentIndex + 1]?._id) {
       await completeConcept({ roadmapId, sectionId, conceptId });
       if (nextConcept) {
@@ -88,6 +91,14 @@ export default function Lesson({
           sectionId: nextSection._id,
           conceptId: nextSection.concepts[0]._id,
         });
+        await planLessons({
+          roadmap_topic: roadmapTitle,
+          roadmap_id: roadmapId,
+          concept_title: nextSection.concepts[0].title,
+          section_title: nextSection.title,
+          concept_id: nextSection.concepts[0]._id,
+          section_id: nextSection._id,
+        });
       }
       return router.push(`/dashboard/roadmaps/${roadmapId}`);
     }
@@ -97,13 +108,12 @@ export default function Lesson({
     );
   }
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: explanation
   useEffect(() => {
-    if (isGenerating || currentLesson?.content) return;
-
     if (lessonId && !currentLesson?.content) {
       console.log("GENERATING LESSON: ", lessonId, currentLesson?.content);
       setIsGenerating(true);
+      setType("lesson");
+      setError("");
       generateLesson({
         conceptTitle,
         roadmapTitle,
@@ -111,12 +121,17 @@ export default function Lesson({
         conceptId,
         sectionTitle,
         lessonId,
-      }).then((lesson) => {
-        if (!lesson?.lesson_id) return;
-        return unlockLesson(lesson.lesson_id).finally(() =>
-          setIsGenerating(false),
-        );
-      });
+      })
+        .catch((err) => {
+          console.log(err);
+          setError(JSON.stringify(err));
+        })
+        .then((lesson) => {
+          if (!lesson?.lesson_id) return;
+          return unlockLesson(lesson.lesson_id).finally(() =>
+            setIsGenerating(false),
+          );
+        });
 
       return;
     }
@@ -133,6 +148,7 @@ export default function Lesson({
   useEffect(() => {
     if (!lessonId) return;
     setType("lesson");
+    setError("");
   }, [lessonId]);
 
   if (!currentLesson) return;
@@ -145,6 +161,7 @@ export default function Lesson({
     if (currentIndex < lessons.length - 1) {
       if (!lessons[currentIndex + 1].content) {
         setIsGenerating(true);
+        setError("");
         generateLesson({
           conceptTitle,
           roadmapTitle,
@@ -152,16 +169,60 @@ export default function Lesson({
           conceptId,
           sectionTitle,
           lessonId: lessons[currentIndex + 1]._id.toString(),
-        }).finally(() => {
-          setType("lesson");
-          setIsGenerating(false);
-        });
+        })
+          .catch((err) => {
+            console.log("Error generation lesson2: ", err);
+            setError(JSON.stringify(err));
+          })
+          .finally(() => {
+            setType("lesson");
+            setIsGenerating(false);
+          });
       } else {
         router.push(
           `/lessons?roadmapId=${roadmapId}&sectionId=${sectionId}&conceptId=${conceptId}&lessonId=${lessons[currentIndex + 1]._id}`,
         );
       }
     }
+  }
+
+  function onRetry() {
+    setError("");
+    setIsGenerating(true);
+    generateLesson({
+      conceptTitle,
+      roadmapTitle,
+      roadmapId,
+      conceptId,
+      sectionTitle,
+      lessonId: lessons[currentIndex]._id.toString(),
+    })
+      .catch((err) => {
+        console.log("Error generation lesson3: ", err);
+        setError(JSON.stringify(err));
+      })
+      .finally(() => {
+        setType("lesson");
+        setIsGenerating(false);
+      });
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen w-full">
+        <Card>
+          <CardContent className="flex flex-col items-center">
+            <AlertCircle size={30} color={"red"} />
+            <p className="mt-4 text-sm text-muted-foreground mb-4 font-bold">
+              Something went wrong generating lesson...
+            </p>
+            <Button onClick={onRetry} className="cursor-pointer">
+              Try Again
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   if (isGenerating) {
@@ -183,12 +244,12 @@ export default function Lesson({
   }
 
   return (
-    <div className=" max-w-screen w-full mx-auto h-screen pb-12 py-12 flex flex-col justify-between p-3 bg-background  max-h-screen overflow-y-auto">
-      <div className=" h-full w-full  max-w-7xl mx-auto">
+    <div className="max-w-screen w-full mx-auto max-h-screen overflow-y-auto flex flex-col justify-between p-3 bg-background  ">
+      <div className=" h-full w-full max-w-7xl mx-auto">
         <section>
           <h3 className="text-muted-foreground mb-1">{roadmapTitle}</h3>
           <h4 className="text-3xl font-bold mb-4">{conceptTitle}</h4>
-          <div className="flex gap-1 items-center justify-between text-muted-foreground mb-6">
+          <div className="flex gap-1 items-center justify-between text-muted-foreground">
             <span className="flex items-center gap-2">
               <Clock size={15} />
               <p>
@@ -204,9 +265,28 @@ export default function Lesson({
               Back to Roadmap
             </Button>
           </div>
+
           {type === "lesson" ? (
             <>
-              <Card className="dark:prose-invert prose max-w-7xl mx-auto pt-0">
+              <Card className="pt-0 mb-0 bg-transparent border-none shadow-none dark:prose-invert prose">
+                <CardContent>
+                  <CardTitle>
+                    <h3 className="mt-0">{currentLesson.title}</h3>
+                    <CardDescription>
+                      <p>{currentLesson.description}</p>
+                    </CardDescription>
+                  </CardTitle>
+                  <h4>Learning Objectives</h4>
+                  <ul>
+                    {currentLesson.learning_objectives.map((o) => (
+                      <li className="text-sm" key={o}>
+                        {o}
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+              <Card className="max-w-7xl mx-auto mb-12 dark:prose-invert prose  ">
                 <CardContent className="">
                   <Markdown
                     remarkPlugins={[remarkGfm]}
@@ -247,8 +327,8 @@ export default function Lesson({
             />
           )}
         </section>
+        <div className="h-12" />
       </div>
-      )
     </div>
   );
 }

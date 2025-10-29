@@ -35,7 +35,6 @@ export default function ExerciseComponent({
   const resultPercentage = (correctCount / exercises.length) * 100;
   const passTreshold = 70;
   const passed = resultPercentage >= passTreshold;
-  console.log("CURRENT EXERCISE INDEX: ", currentExerciseIndex);
 
   function onAnswer(isCorrect: boolean) {
     setResults((prev) => [...prev, isCorrect]);
@@ -116,7 +115,7 @@ export default function ExerciseComponent({
           </CardContent>
         </Card>
         {passed ? (
-          <Button className="mt-4" onClick={onNextLesson}>
+          <Button className="mt-4 cursor-pointer" onClick={onNextLesson}>
             {isLessonFinal ? "Unlock Next Section" : "Next Lesson"}
           </Button>
         ) : (

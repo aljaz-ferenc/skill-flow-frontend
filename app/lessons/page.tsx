@@ -88,7 +88,6 @@ export default async function LessonsPage(props: PageProps<"/lessons">) {
               type="button"
               className={cn(
                 "flex justify-start items-center cursor-pointer py-2",
-                lesson.status === "locked" && "pointer-events-none",
                 lesson._id.toString() === lessonId && "bg-accent rounded-md",
                 `text-${getStatusColor(lesson.status)}`,
               )}

@@ -1,4 +1,4 @@
-import { CheckCircle, PlayCircle } from "lucide-react";
+import { CheckCircle, Lock, PlayCircle } from "lucide-react";
 import Link from "next/link";
 import { CiLock } from "react-icons/ci";
 import {
@@ -7,6 +7,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { getLessonsByConceptId } from "@/lib/actions";
 import type { Roadmap } from "@/lib/types";
 import { cn, getSectionProgressPercentage } from "@/lib/utils";
 
@@ -60,29 +61,54 @@ export default function RoadmapAccordion({
           <AccordionContent>
             <ul className="flex flex-col">
               <hr className="mb-3" />
-              {section.concepts.map((concept) => {
+              {section.concepts.map(async (concept) => {
+                const lessons = await getLessonsByConceptId(concept._id);
                 return (
-                  <Link
-                    href={
-                      concept.status === "locked"
-                        ? `/dashboard/roadmaps/${roadmapId}`
-                        : `/lessons?roadmapId=${roadmapId}&sectionId=${section._id}&conceptId=${concept._id}`
-                    }
-                    className={cn(
-                      "flex gap-3 items-center hover:bg-muted px-4 py-4 rounded-xl transition-colors",
-                      concept.status === "locked" &&
-                        "text-muted-foreground pointer-events-none",
-                    )}
-                    key={concept.description}
-                  >
-                    <ConceptStatusIndicator status={concept.status} />
-                    <div key={concept.title} className="flex flex-col gap-1">
-                      <span className="font-bold">{concept.title}</span>
-                      <span className="font-normal text-xs">
-                        {concept.description}
-                      </span>
+                  <div key={concept._id}>
+                    <div
+                      // href={
+                      //   concept.status === "locked"
+                      //     ? `/dashboard/roadmaps/${roadmapId}`
+                      //     : `/lessons?roadmapId=${roadmapId}&sectionId=${section._id}&conceptId=${concept._id}`
+                      // }
+                      className={cn(
+                        "flex gap-3 items-center px-4 py-4 rounded-xl transition-colors",
+                        concept.status === "locked" &&
+                          "text-muted-foreground pointer-events-none",
+                      )}
+                      key={concept.description}
+                    >
+                      <ConceptStatusIndicator status={concept.status} />
+                      <div key={concept.title} className="flex flex-col gap-1">
+                        <span className="font-bold">{concept.title}</span>
+                        <span className="font-normal text-xs text-muted-foreground">
+                          {concept.description}
+                        </span>
+                      </div>
                     </div>
-                  </Link>
+                    <div className="flex flex-col gap-3 text-xs mb-10 ml-10">
+                      {lessons.map((lesson) => (
+                        <Link
+                          key={lesson._id.toString()}
+                          href={`/lessons?roadmapId=${roadmapId}&sectionId=${section._id}&conceptId=${concept._id}&lessonId=${lesson._id}`}
+                          className={cn(
+                            "hover:underline hover:text-primary flex items-center gap-2",
+                            lesson.status === "completed" && "text-blue-500",
+                            lesson.status === "current" && "text-primary",
+                          )}
+                        >
+                          {lesson.status === "completed" && (
+                            <CheckCircle size={12} />
+                          )}
+                          {lesson.status === "current" && (
+                            <PlayCircle size={12} />
+                          )}
+                          {lesson.status === "locked" && <Lock size={12} />}
+                          {lesson.title}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
                 );
               })}
             </ul>

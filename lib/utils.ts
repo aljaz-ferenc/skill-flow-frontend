@@ -11,7 +11,7 @@ export function getStatusColor(status: "completed" | "locked" | "current") {
     case "completed":
       return "blue-500";
     case "current":
-      return "amber-400";
+      return "primary";
     case "locked":
       return "gray-500";
   }

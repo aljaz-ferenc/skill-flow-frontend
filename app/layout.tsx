@@ -27,15 +27,15 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {process.env.NODE_ENV === "development" && (
-          <a
-            rel="noreferrer"
-            target="_blank"
-            href="https://cloud.mongodb.com/v2/68f224c7777084438f6148e4#/metrics/replicaSet/68f224f97e890959670e0f86/explorer/prod/lessons/find"
-          >
-            MongoDB
-          </a>
-        )}
+        {/*{process.env.NODE_ENV === "development" && (*/}
+        {/*  <a*/}
+        {/*    rel="noreferrer"*/}
+        {/*    target="_blank"*/}
+        {/*    href="https://cloud.mongodb.com/v2/68f224c7777084438f6148e4#/metrics/replicaSet/68f224f97e890959670e0f86/explorer/prod/lessons/find"*/}
+        {/*  >*/}
+        {/*    MongoDB*/}
+        {/*  </a>*/}
+        {/*)}*/}
         {children}
       </body>
     </html>

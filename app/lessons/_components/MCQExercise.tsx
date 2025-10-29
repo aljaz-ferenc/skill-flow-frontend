@@ -42,7 +42,7 @@ export default function MCQExercise({
 
   return (
     <article className="h-full flex items-center max-w-4xl mx-auto flex-col gap-4">
-      <Card className="h-min mx-auto w-full mt-12">
+      <Card className="h-min mx-auto w-full mt-12 dark:prose-invert prose max-w-4xl">
         <CardContent>
           <span className="text-lg font-semibold prose dark:prose-invert">
             <Markdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypePrism]}>
@@ -57,7 +57,7 @@ export default function MCQExercise({
               <div key={option}>
                 <Label
                   className={cn(
-                    "border text-md p-2 rounded border-transparent hover:bg-muted cursor-pointer",
+                    "border text-md px-4 rounded border-transparent hover:bg-muted cursor-pointer",
                     answerIndex !== null &&
                       isGuessCorrect &&
                       index === answerIndex &&
@@ -98,7 +98,10 @@ export default function MCQExercise({
           Check Answer
         </Button>
       ) : (
-        <Button onClick={onNextExercise} className="self-start cursor-pointer">
+        <Button
+          onClick={onNextExercise}
+          className="self-start cursor-pointer bg-green-500 hover:bg-green-400"
+        >
           Next Exercise
         </Button>
       )}
