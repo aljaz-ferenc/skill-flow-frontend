@@ -66,11 +66,6 @@ export default function RoadmapAccordion({
                 return (
                   <div key={concept._id}>
                     <div
-                      // href={
-                      //   concept.status === "locked"
-                      //     ? `/dashboard/roadmaps/${roadmapId}`
-                      //     : `/lessons?roadmapId=${roadmapId}&sectionId=${section._id}&conceptId=${concept._id}`
-                      // }
                       className={cn(
                         "flex gap-3 items-center px-4 py-4 rounded-xl transition-colors",
                         concept.status === "locked" &&

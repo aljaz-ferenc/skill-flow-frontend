@@ -121,7 +121,14 @@ export default async function LessonsPage(props: PageProps<"/lessons">) {
                   className="flex justify-start items-center py-2 text-xs text-left"
                 >
                   {getStatusIcon(lesson.status)}
-                  {lesson.title}
+                  <h4
+                    className={cn(
+                      "w-full text-xs leading-4",
+                      `text-${getStatusColor(lesson.status)}`,
+                    )}
+                  >
+                    {lesson.title}
+                  </h4>
                 </div>
               );
             }

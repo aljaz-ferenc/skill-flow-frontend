@@ -72,7 +72,7 @@ export default function Lesson({
 
     // if last concept in last section
     if (!nextConcept && !nextSection) {
-      throw new Error("Roadmap complete, no new section to unlock");
+      await completeSection({ roadmapId, sectionId });
     }
 
     // if last concept in section - complete section,  unlock next concept and next section, plan lessons for unlocked concept
