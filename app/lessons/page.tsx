@@ -3,14 +3,6 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import Lesson from "@/app/lessons/_components/Lesson";
 import { buttonVariants } from "@/components/ui/button";
-// import {
-//   Stepper,
-//   StepperIndicator,
-//   StepperItem,
-//   StepperSeparator,
-//   StepperTitle,
-//   StepperTrigger,
-// } from "@/components/ui/stepper";
 import { getLessonsByConceptId, getRoadmap, planLessons } from "@/lib/actions";
 import type { Lesson as TLesson } from "@/lib/types";
 import { cn, getStatusColor } from "@/lib/utils";
@@ -87,38 +79,15 @@ export default async function LessonsPage(props: PageProps<"/lessons">) {
 
   return (
     <main className="flex min-h-screen overflow-x-hidden">
-      <aside className="p-2 flex flex-col justify-between bg-secondary">
+      <aside className="p-4 flex flex-col justify-between bg-secondary">
         <h3 className="text-xl font-bold mb-2">{concept.title}</h3>
         <div className="w-60">
-          {/*<div className="text-center">*/}
-          {/*  <Stepper orientation="vertical">*/}
-          {/*    {lessons.map((lesson, index) => (*/}
-          {/*      <StepperItem*/}
-          {/*        key={lesson._id}*/}
-          {/*        step={index + 1}*/}
-          {/*        className="relative items-start not-last:flex-1"*/}
-          {/*      >*/}
-          {/*        <StepperTrigger className="items-start rounded last:pb-0 mb-4">*/}
-          {/*          <StepperIndicator />*/}
-          {/*          <div className="mt-0.5 px-2 text-left">*/}
-          {/*            <StepperTitle>*/}
-          {/*              <p className="!text-sm">{lesson.title}</p>*/}
-          {/*            </StepperTitle>*/}
-          {/*          </div>*/}
-          {/*        </StepperTrigger>*/}
-          {/*        {index + 1 < lessons.length && (*/}
-          {/*          <StepperSeparator className="absolute inset-y-0 top-[calc(1.5rem+0.125rem)] left-3 -order-1 m-0 -translate-x-1/2 group-data-[orientation=horizontal]/stepper:w-[calc(100%-1.5rem-0.25rem)] group-data-[orientation=horizontal]/stepper:flex-none group-data-[orientation=vertical]/stepper:h-[calc(100%-1.5rem-0.25rem)]" />*/}
-          {/*        )}*/}
-          {/*      </StepperItem>*/}
-          {/*    ))}*/}
-          {/*  </Stepper>*/}
-          {/*</div>*/}
           {lessons.map((lesson) => {
             if (lesson.status === "locked") {
               return (
                 <div
                   key={lesson._id}
-                  className="flex justify-start items-center py-2 text-xs text-left"
+                  className="flex justify-start items-center py-2 text-left"
                 >
                   {getStatusIcon(lesson.status)}
                   <h4
@@ -138,7 +107,7 @@ export default async function LessonsPage(props: PageProps<"/lessons">) {
                 type="button"
                 className={cn(
                   "flex justify-start items-center cursor-pointer py-2",
-                  lesson._id.toString() === lessonId && "bg-accent rounded-md",
+                  lesson._id.toString() === lessonId && "bg-accent rounded-xs",
                   `text-${getStatusColor(lesson.status)}`,
                 )}
                 key={lesson._id}
@@ -184,21 +153,21 @@ function getStatusIcon(status: "current" | "locked" | "completed") {
     case "completed":
       return (
         <CircleCheck
-          size={12}
+          size={16}
           className={cn("w-12", `text-${getStatusColor(status)}`)}
         />
       );
     case "current":
       return (
         <CircleDot
-          size={12}
+          size={16}
           className={cn("w-12", `text-${getStatusColor(status)}`)}
         />
       );
     case "locked":
       return (
         <Circle
-          size={12}
+          size={16}
           className={cn("!w-12", `text-${getStatusColor(status)}`)}
         />
       );
