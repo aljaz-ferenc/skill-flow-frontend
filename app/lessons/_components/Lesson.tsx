@@ -18,6 +18,7 @@ import {
 import {
   completeConcept,
   completeLesson,
+  completeSection,
   generateLesson,
   planLessons,
   unlockConcept,
@@ -33,6 +34,7 @@ type LessonProps = {
   conceptTitle: string;
   nextConcept: ConceptMeta | null;
   nextSection: Section;
+  section: Section;
 };
 
 export default function Lesson({
@@ -42,9 +44,11 @@ export default function Lesson({
   sectionTitle,
   nextConcept,
   nextSection,
+  section,
 }: LessonProps) {
   const [type, setType] = useState<"lesson" | "exercise">("lesson");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isFinishingConcept, setIsFinishingConcept] = useState(false);
   const router = useRouter();
   const params = useSearchParams();
   const sectionId = params.get("sectionId") as string;
@@ -61,45 +65,60 @@ export default function Lesson({
     router.push(`/dashboard/roadmaps/${roadmapId}`);
   }
 
-  async function onNextLesson() {
-    const nextLessonIndex = lessons.findIndex((l) => l._id === lessonId) + 1;
-    setIsGenerating(true);
+  async function onCompleteConcept() {
+    setIsFinishingConcept(true);
     await completeLesson(lessonId);
+    await completeConcept({ conceptId, sectionId, roadmapId });
+
+    // if last concept in last section
+    if (!nextConcept && !nextSection) {
+      throw new Error("Roadmap complete, no new section to unlock");
+    }
+
+    // if last concept in section - complete section,  unlock next concept and next section, plan lessons for unlocked concept
+    if (!nextConcept) {
+      await completeSection({ roadmapId, sectionId });
+      await unlockSection({ roadmapId, sectionId: nextSection._id });
+      await unlockConcept({
+        roadmapId,
+        sectionId: nextSection._id,
+        conceptId: nextSection.concepts[0]._id,
+      });
+      await planLessons({
+        roadmap_topic: roadmapTitle,
+        roadmap_id: roadmapId,
+        concept_title: nextSection.concepts[0].title,
+        section_title: nextSection.title,
+        concept_id: nextSection.concepts[0]._id,
+        section_id: nextSection._id,
+      });
+    }
+
+    // if not last concept in section
+    if (nextConcept) {
+      await unlockConcept({ conceptId: nextConcept._id, sectionId, roadmapId });
+      await planLessons({
+        roadmap_topic: roadmapTitle,
+        roadmap_id: roadmapId,
+        concept_title: nextConcept.title,
+        section_title: section.title,
+        concept_id: nextConcept._id,
+        section_id: nextSection._id,
+      });
+    }
+    setIsFinishingConcept(false);
+
+    return router.push(`/dashboard/roadmaps/${roadmapId}`);
+  }
+
+  async function onNextLesson() {
+    setIsGenerating(true);
+    const nextLessonIndex = lessons.findIndex((l) => l._id === lessonId) + 1;
+
+    await completeLesson(lessons[currentIndex]._id);
 
     if (nextLessonIndex < 0 || !lessons[currentIndex + 1]?._id) {
       await completeConcept({ roadmapId, sectionId, conceptId });
-      if (nextConcept) {
-        await planLessons({
-          roadmap_topic: roadmapTitle,
-          section_title: sectionTitle,
-          concept_title: nextConcept.title,
-          concept_id: nextConcept._id,
-          roadmap_id: roadmapId,
-          section_id: sectionId,
-        });
-        await unlockConcept({
-          roadmapId,
-          conceptId: nextConcept._id,
-          sectionId,
-        });
-      } else {
-        if (!nextSection)
-          throw new Error("Roadmap complete, no new section to unlock");
-        await unlockSection({ roadmapId, sectionId: nextSection._id });
-        await unlockConcept({
-          roadmapId,
-          sectionId: nextSection._id,
-          conceptId: nextSection.concepts[0]._id,
-        });
-        await planLessons({
-          roadmap_topic: roadmapTitle,
-          roadmap_id: roadmapId,
-          concept_title: nextSection.concepts[0].title,
-          section_title: nextSection.title,
-          concept_id: nextSection.concepts[0]._id,
-          section_id: nextSection._id,
-        });
-      }
       return router.push(`/dashboard/roadmaps/${roadmapId}`);
     }
 
@@ -225,12 +244,12 @@ export default function Lesson({
     );
   }
 
-  if (isGenerating) {
+  if (isGenerating || isFinishingConcept) {
     return (
       <div className="flex flex-col items-center justify-center h-screen w-full">
         <PuffLoader color="var(--color-primary)" />
         <p className="mt-4 text-sm text-muted-foreground font-bold animate-pulse">
-          Generating lesson...
+          {isGenerating ? "Generating lesson..." : "Finishing things up..."}
         </p>
       </div>
     );
@@ -250,7 +269,7 @@ export default function Lesson({
           <h3 className="text-muted-foreground mb-1">{roadmapTitle}</h3>
           <h4 className="text-3xl font-bold mb-4">{conceptTitle}</h4>
           <div className="flex gap-1 items-center justify-between text-muted-foreground">
-            <span className="flex items-center gap-2">
+            <span className="flex items-center gap-2 mb-8">
               <Clock size={15} />
               <p>
                 {getReadingTime(
@@ -324,6 +343,7 @@ export default function Lesson({
               onBackToLessonAction={() => setType("lesson")}
               onNextLessonAction={onNextLesson}
               isLessonFinal={isFinal}
+              onCompleteConceptAction={onCompleteConcept}
             />
           )}
         </section>

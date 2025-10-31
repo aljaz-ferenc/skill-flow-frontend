@@ -9,7 +9,8 @@ export async function getRoadmaps() {
   try {
     const client = await clientPromise;
     const db = client.db("prod");
-    return (await db.collection("roadmaps").find({}).toArray()) as Roadmap[];
+    const roadmaps = await db.collection("roadmaps").find({}).toArray();
+    return JSON.parse(JSON.stringify(roadmaps)) as Roadmap[];
   } catch (err) {
     console.error(err);
     throw err;
@@ -20,9 +21,11 @@ export async function getRoadmap(roadmapId: string) {
   try {
     const client = await clientPromise;
     const db = client.db("prod");
-    return (await db
-      .collection("roadmaps")
+    const roadmap = (await db
+      .collection<Roadmap>("roadmaps")
       .findOne({ _id: new ObjectId(roadmapId) })) as Roadmap;
+
+    return JSON.parse(JSON.stringify(roadmap)) as Roadmap;
   } catch (err) {
     console.error(err);
     throw err;
@@ -160,9 +163,42 @@ export async function getLessonById(lessonId: string) {
     const db = client.db("prod");
     const lessonsCol = db.collection<Lesson>("lessons");
 
-    return await lessonsCol.findOne({
+    const doc = await lessonsCol.findOne({
       _id: lessonId,
     });
+
+    return JSON.parse(JSON.stringify(doc)) as Lesson;
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+}
+
+export async function completeSection({
+  roadmapId,
+  sectionId,
+}: {
+  roadmapId: string;
+  sectionId: string;
+}) {
+  try {
+    const client = await clientPromise;
+    const db = client.db("prod");
+    const roadmapCol = db.collection("roadmaps");
+
+    await roadmapCol.findOneAndUpdate(
+      { _id: new ObjectId(roadmapId) },
+      {
+        $set: {
+          "sections.$[section].status": "completed",
+        },
+      },
+      {
+        arrayFilters: [{ "section._id": sectionId }],
+      },
+    );
+
+    return { sectionId, roadmapId };
   } catch (err) {
     console.error(err);
     throw err;
@@ -174,7 +210,7 @@ export async function completeLesson(lessonId: string) {
   try {
     const client = await clientPromise;
     const db = client.db("prod");
-    const lessonsCol = db.collection("lessons");
+    const lessonsCol = db.collection<Lesson>("lessons");
 
     const updatedLesson = await lessonsCol.findOneAndUpdate(
       { _id: new ObjectId(lessonId) },
@@ -358,109 +394,109 @@ export async function unlockSection({
 //   nextLesson: Lesson["_id"];
 // };
 
-export async function getCurrentLesson({
-  roadmapId,
-  sectionId,
-  conceptId,
-  lessonId,
-}: {
-  roadmapId: string;
-  sectionId: string;
-  conceptId: string;
-  lessonId?: string;
-}): Promise<Lesson> {
-  try {
-    if (lessonId) {
-      const lesson = await getLessonById(lessonId);
-
-      if (lesson?.content) {
-        return lesson;
-      }
-
-      const roadmap = await getRoadmap(roadmapId);
-      const section = roadmap.sections.find((s) => s._id === sectionId);
-      const concept = section?.concepts.find((c) => c._id === conceptId);
-
-      if (!roadmap || !section || !concept) {
-        throw new Error("Roadmap, section, or concept not found");
-      }
-
-      const lessonMeta = concept.lessons.find(
-        (l) => l._id.toString() === lessonId,
-      );
-      if (!lessonMeta) {
-        throw new Error(`Lesson ${lessonId} not found in concept`);
-      }
-
-      const { lesson_id } = await generateLesson({
-        roadmapId,
-        conceptId,
-        roadmapTitle: roadmap.topic,
-        sectionTitle: section.title,
-        conceptTitle: concept.title,
-        lessonId,
-      });
-
-      return (await getLessonById(lesson_id)) as Lesson;
-    }
-
-    const roadmap = await getRoadmap(roadmapId);
-    const section = roadmap.sections.find((s) => s._id === sectionId);
-    if (!section) throw new Error("Section not found");
-
-    const concept = section.concepts.find((c) => c._id === conceptId);
-    if (!concept) throw new Error("Concept not found");
-
-    let targetLessonMeta = concept.lessons.find((l) => l.status === "current");
-
-    if (!targetLessonMeta) {
-      targetLessonMeta = concept.lessons[0];
-    }
-
-    if (!targetLessonMeta) {
-      await planLessons({
-        roadmap_topic: roadmap.topic,
-        concept_title: concept.title,
-        concept_id: conceptId,
-        section_title: section.title,
-        section_id: sectionId,
-        roadmap_id: roadmapId,
-      });
-
-      revalidatePath("/lessons");
-      const updatedRoadmap = await getRoadmap(roadmapId);
-      const updatedSection = updatedRoadmap.sections.find(
-        (s) => s._id === sectionId,
-      );
-      const updatedConcept = updatedSection?.concepts.find(
-        (c) => c._id === conceptId,
-      );
-
-      if (!updatedConcept?.lessons?.[0]) {
-        throw new Error("Failed to plan lessons");
-      }
-
-      targetLessonMeta = updatedConcept.lessons[0];
-    }
-
-    let targetLesson = await getLessonById(targetLessonMeta._id.toString());
-
-    if (!targetLesson?.content) {
-      const { lesson_id } = await generateLesson({
-        roadmapId,
-        conceptId,
-        roadmapTitle: roadmap.topic,
-        sectionTitle: section.title,
-        conceptTitle: concept.title,
-        lessonId: targetLessonMeta._id.toString(),
-      });
-
-      targetLesson = await getLessonById(lesson_id);
-    }
-
-    return targetLesson as Lesson;
-  } catch (err) {
-    console.error("Error in getCurrentLesson:", err);
-    throw err;
-  }
-}
+// export async function getCurrentLesson({
+//   roadmapId,
+//   sectionId,
+//   conceptId,
+//   lessonId,
+// }: {
+//   roadmapId: string;
+//   sectionId: string;
+//   conceptId: string;
+//   lessonId?: string;
+// }): Promise<Lesson> {
+//   try {
+//     if (lessonId) {
+//       const lesson = await getLessonById(lessonId);
+//
+//       if (lesson?.content) {
+//         return lesson;
+//       }
+//
+//       const roadmap = await getRoadmap(roadmapId);
+//       const section = roadmap.sections.find((s) => s._id === sectionId);
+//       const concept = section?.concepts.find((c) => c._id === conceptId);
+//
+//       if (!roadmap || !section || !concept) {
+//         throw new Error("Roadmap, section, or concept not found");
+//       }
+//
+//       const lessonMeta = concept.lessons.find(
+//         (l) => l._id.toString() === lessonId,
+//       );
+//       if (!lessonMeta) {
+//         throw new Error(`Lesson ${lessonId} not found in concept`);
+//       }
+//
+//       const { lesson_id } = await generateLesson({
+//         roadmapId,
+//         conceptId,
+//         roadmapTitle: roadmap.topic,
+//         sectionTitle: section.title,
+//         conceptTitle: concept.title,
+//         lessonId,
+//       });
+//
+//       return (await getLessonById(lesson_id)) as Lesson;
+//     }
+//
+//     const roadmap = await getRoadmap(roadmapId);
+//     const section = roadmap.sections.find((s) => s._id === sectionId);
+//     if (!section) throw new Error("Section not found");
+//
+//     const concept = section.concepts.find((c) => c._id === conceptId);
+//     if (!concept) throw new Error("Concept not found");
+//
+//     let targetLessonMeta = concept.lessons.find((l) => l.status === "current");
+//
+//     if (!targetLessonMeta) {
+//       targetLessonMeta = concept.lessons[0];
+//     }
+//
+//     if (!targetLessonMeta) {
+//       await planLessons({
+//         roadmap_topic: roadmap.topic,
+//         concept_title: concept.title,
+//         concept_id: conceptId,
+//         section_title: section.title,
+//         section_id: sectionId,
+//         roadmap_id: roadmapId,
+//       });
+//
+//       revalidatePath("/lessons");
+//       const updatedRoadmap = await getRoadmap(roadmapId);
+//       const updatedSection = updatedRoadmap.sections.find(
+//         (s) => s._id === sectionId,
+//       );
+//       const updatedConcept = updatedSection?.concepts.find(
+//         (c) => c._id === conceptId,
+//       );
+//
+//       if (!updatedConcept?.lessons?.[0]) {
+//         throw new Error("Failed to plan lessons");
+//       }
+//
+//       targetLessonMeta = updatedConcept.lessons[0];
+//     }
+//
+//     let targetLesson = await getLessonById(targetLessonMeta._id.toString());
+//
+//     if (!targetLesson?.content) {
+//       const { lesson_id } = await generateLesson({
+//         roadmapId,
+//         conceptId,
+//         roadmapTitle: roadmap.topic,
+//         sectionTitle: section.title,
+//         conceptTitle: concept.title,
+//         lessonId: targetLessonMeta._id.toString(),
+//       });
+//
+//       targetLesson = await getLessonById(lesson_id);
+//     }
+//
+//     return targetLesson as Lesson;
+//   } catch (err) {
+//     console.error("Error in getCurrentLesson:", err);
+//     throw err;
+//   }
+// }

@@ -16,6 +16,7 @@ type ExerciseProps = {
   onAnswerCorrectAction: () => void;
   onBackToLessonAction: () => void;
   onNextLessonAction: () => void;
+  onCompleteConceptAction: () => void;
   isLessonFinal: boolean;
 };
 
@@ -25,6 +26,7 @@ export default function ExerciseComponent({
   onAnswerCorrectAction,
   onBackToLessonAction,
   onNextLessonAction,
+  onCompleteConceptAction,
   isLessonFinal,
 }: ExerciseProps) {
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
@@ -43,6 +45,14 @@ export default function ExerciseComponent({
   function onNextLesson() {
     onNextLessonAction();
     resetQuiz();
+  }
+
+  function completeLesson() {
+    if (!isLessonFinal) {
+      return onNextLesson();
+    } else {
+      onCompleteConceptAction();
+    }
   }
 
   function resetQuiz() {
@@ -115,8 +125,8 @@ export default function ExerciseComponent({
           </CardContent>
         </Card>
         {passed ? (
-          <Button className="mt-4 cursor-pointer" onClick={onNextLesson}>
-            {isLessonFinal ? "Unlock Next Section" : "Next Lesson"}
+          <Button className="mt-4 cursor-pointer" onClick={completeLesson}>
+            Complete Lesson
           </Button>
         ) : (
           <Button className="mt-4" onClick={resetQuiz}>

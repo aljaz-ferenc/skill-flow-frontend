@@ -133,7 +133,10 @@ export default function QuestionExercise({
             </Card>
           )}
           {answerResult && (
-            <Button onClick={onNextExercise} className="mt-4 cursor-pointer bg-green-500 hover:bg-green-400">
+            <Button
+              onClick={onNextExercise}
+              className="mt-4 cursor-pointer bg-green-500 hover:bg-green-400"
+            >
               Next Exercise
             </Button>
           )}

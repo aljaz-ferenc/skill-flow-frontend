@@ -87,26 +87,39 @@ export default function RoadmapAccordion({
                       </div>
                     </div>
                     <div className="flex flex-col gap-3 text-xs mb-10 ml-10">
-                      {lessons.map((lesson) => (
-                        <Link
-                          key={lesson._id.toString()}
-                          href={`/lessons?roadmapId=${roadmapId}&sectionId=${section._id}&conceptId=${concept._id}&lessonId=${lesson._id}`}
-                          className={cn(
-                            "hover:underline hover:text-primary flex items-center gap-2",
-                            lesson.status === "completed" && "text-blue-500",
-                            lesson.status === "current" && "text-primary",
-                          )}
-                        >
-                          {lesson.status === "completed" && (
-                            <CheckCircle size={12} />
-                          )}
-                          {lesson.status === "current" && (
-                            <PlayCircle size={12} />
-                          )}
-                          {lesson.status === "locked" && <Lock size={12} />}
-                          {lesson.title}
-                        </Link>
-                      ))}
+                      {lessons.map((lesson) => {
+                        if (lesson.status === "locked") {
+                          return (
+                            <button
+                              type="button"
+                              key={lesson._id}
+                              className="text-muted-foreground flex items-center gap-2"
+                            >
+                              <Lock size={12} />
+                              {lesson.title}
+                            </button>
+                          );
+                        }
+                        return (
+                          <Link
+                            key={lesson._id.toString()}
+                            href={`/lessons?roadmapId=${roadmapId}&sectionId=${section._id}&conceptId=${concept._id}&lessonId=${lesson._id}`}
+                            className={cn(
+                              "hover:underline flex items-center gap-2",
+                              lesson.status === "completed" && "text-blue-500",
+                              lesson.status === "current" && "text-primary",
+                            )}
+                          >
+                            {lesson.status === "completed" && (
+                              <CheckCircle size={12} />
+                            )}
+                            {lesson.status === "current" && (
+                              <PlayCircle size={12} />
+                            )}
+                            {lesson.title}
+                          </Link>
+                        );
+                      })}
                     </div>
                   </div>
                 );

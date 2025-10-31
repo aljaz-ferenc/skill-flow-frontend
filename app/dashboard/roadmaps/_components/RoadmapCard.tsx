@@ -4,7 +4,7 @@ import RoadmapDropdownMenu from "@/app/dashboard/roadmaps/_components/RoadmapDro
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import type { Roadmap } from "@/lib/types";
-import {cn, getRoadmapProgressPercentage} from "@/lib/utils";
+import { cn, getRoadmapProgressPercentage } from "@/lib/utils";
 
 type RoadmapCardProps = {
   roadmap: Roadmap;
@@ -23,25 +23,24 @@ export default function RoadmapCard({ roadmap }: RoadmapCardProps) {
         {/*<p className="text-gray-600 dark:text-gray-400 mb-4 text-sm">*/}
         {/*  description*/}
         {/*</p>*/}
-          <div>
-
-        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 mb-4">
-          <div className="bg-primary h-2.5 rounded-full"></div>
-        </div>
-        <div className="flex justify-between items-center text-sm text-gray-500 dark:text-gray-400">
-          <span>{getRoadmapProgressPercentage(roadmap)}% Complete</span>
-          <Link
-            href={`/dashboard/roadmaps/${roadmap._id}`}
-            className={cn(
-              "flex items-center gap-2 cursor-pointer",
-              buttonVariants({ variant: "link" }),
-            )}
-          >
-            Continue
-            <span className="material-symbols-outlined text-base">
-              <ArrowRight />
-            </span>
-          </Link>
+        <div>
+          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 mb-4">
+            <div className="bg-primary h-2.5 rounded-full"></div>
+          </div>
+          <div className="flex justify-between items-center text-sm text-gray-500 dark:text-gray-400">
+            <span>{getRoadmapProgressPercentage(roadmap)}% Complete</span>
+            <Link
+              href={`/dashboard/roadmaps/${roadmap._id}`}
+              className={cn(
+                "flex items-center gap-2 cursor-pointer",
+                buttonVariants({ variant: "link" }),
+              )}
+            >
+              Continue
+              <span className="material-symbols-outlined text-base">
+                <ArrowRight />
+              </span>
+            </Link>
           </div>
         </div>
       </CardContent>
