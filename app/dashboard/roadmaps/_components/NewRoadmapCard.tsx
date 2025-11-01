@@ -80,7 +80,7 @@ export default function NewRoadmapCard() {
                   placeholder="Type your roadmap title here..."
                   autoComplete="off"
                   autoCorrect="off"
-                  className="ml-1"
+                  className="ml-1 bg-white"
                 />
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />

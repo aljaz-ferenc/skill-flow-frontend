@@ -13,7 +13,7 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-full max-w-60 p-3">
+    <aside className="w-full max-w-60 p-3 border-r border-black border">
       <ul>
         {sidebarItems.map((item) => (
           <Link

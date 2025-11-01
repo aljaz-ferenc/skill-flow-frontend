@@ -24,7 +24,7 @@ export default function RoadmapDropdownMenu({
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
+      <DropdownMenuTrigger className="self-start">
         <Ellipsis />
       </DropdownMenuTrigger>
       <DropdownMenuContent>
