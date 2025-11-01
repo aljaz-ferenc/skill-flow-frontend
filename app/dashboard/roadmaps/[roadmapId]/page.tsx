@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import RoadmapAccordion from "@/app/dashboard/roadmaps/[roadmapId]/_components/RoadmapAccordion";
 import { getRoadmap } from "@/lib/actions";
 import { getRoadmapProgressPercentage } from "@/lib/utils";

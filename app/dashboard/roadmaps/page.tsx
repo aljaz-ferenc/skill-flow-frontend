@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import NewRoadmapCard from "@/app/dashboard/roadmaps/_components/NewRoadmapCard";
 import RoadmapCard from "@/app/dashboard/roadmaps/_components/RoadmapCard";
 import { getRoadmaps } from "@/lib/actions";
