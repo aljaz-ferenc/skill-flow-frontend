@@ -20,9 +20,6 @@ export default function RoadmapCard({ roadmap }: RoadmapCardProps) {
           </h3>
           <RoadmapDropdownMenu roadmapId={roadmap._id.toString()} />
         </header>
-        {/*<p className="text-gray-600 dark:text-gray-400 mb-4 text-sm">*/}
-        {/*  description*/}
-        {/*</p>*/}
         <div>
           <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 mb-4">
             <div className="bg-primary h-2.5 rounded-full"></div>
