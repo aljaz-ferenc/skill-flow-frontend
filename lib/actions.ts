@@ -113,7 +113,7 @@ export async function checkAnswer(payload: {
   answer: string;
   lessonContent: string;
 }): Promise<AnswerResult> {
-  console.log("checking answer");
+  console.log("Checking answer...");
   try {
     const res = await fetch("http://127.0.0.1:8000/check-answer", {
       method: "POST",
@@ -213,6 +213,7 @@ export async function completeLesson(lessonId: string) {
     const lessonsCol = db.collection<Lesson>("lessons");
 
     const updatedLesson = await lessonsCol.findOneAndUpdate(
+      // @ts-expect-error
       { _id: new ObjectId(lessonId) },
       {
         $set: {
@@ -221,8 +222,6 @@ export async function completeLesson(lessonId: string) {
       },
       { returnDocument: "after" },
     );
-
-    console.log("UPDATED_LESSON: ", updatedLesson);
 
     revalidatePath("/lessons");
     return JSON.parse(JSON.stringify(updatedLesson)) as Lesson;
@@ -279,7 +278,8 @@ export async function planLessons(payload: {
     if (!res.ok) {
       throw new Error(`Error planning lessons: ${await res.text()}`);
     }
-    console.log(await res.json());
+
+    return { success: true };
   } catch (err) {
     console.error(`Error planning lessons: ${err}`);
     throw err;
