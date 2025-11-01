@@ -2,6 +2,7 @@
 
 import { ObjectId } from "mongodb";
 import { revalidatePath } from "next/cache";
+import { cache } from "react";
 import { Endpoints } from "@/lib/endpoints";
 import clientPromise from "@/lib/mongodb";
 import type { AnswerResult, Lesson, Roadmap } from "@/lib/types";
@@ -18,7 +19,7 @@ export async function getRoadmaps() {
   }
 }
 
-export async function getRoadmap(roadmapId: string) {
+export const getRoadmap = cache(async (roadmapId: string) => {
   try {
     const client = await clientPromise;
     const db = client.db("prod");
@@ -31,7 +32,7 @@ export async function getRoadmap(roadmapId: string) {
     console.error(err);
     throw err;
   }
-}
+});
 
 export async function unlockLesson(lessonId: string) {
   console.log("Unlocking lesson...");
