@@ -13,7 +13,7 @@ export default async function RoadmapPage({
   const roadmap = await getRoadmap(roadmapId);
 
   return (
-    <main className="w-full flex flex-col gap-10 max-w-4xl mx-auto p-3">
+    <main className="w-full flex flex-col gap-10 max-w-4xl mx-auto p-8">
       <h3 className="text-4xl font-bold">{roadmap.topic}</h3>
       <div className="gap-6 justify-between items-center">
         <p className="text-base font-medium leading-normal">Progress</p>

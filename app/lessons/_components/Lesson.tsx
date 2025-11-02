@@ -263,10 +263,9 @@ export default function Lesson({
   }
 
   return (
-    <div className="max-w-screen w-full mx-auto max-h-screen overflow-y-auto flex flex-col justify-between p-3 bg-background  ">
+    <div className="max-w-screen w-full mx-auto max-h-screen overflow-y-auto flex flex-col justify-between p-12 bg-background  ">
       <div className=" h-full w-full max-w-7xl mx-auto">
         <section>
-          <h3 className="text-muted-foreground mb-1">{roadmapTitle}</h3>
           <h4 className="text-3xl font-bold mb-4">{conceptTitle}</h4>
           <div className="flex gap-1 items-center justify-between text-muted-foreground">
             <span className="flex items-center gap-2 mb-8">

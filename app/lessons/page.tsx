@@ -1,6 +1,6 @@
 export const dynamic = "force-dynamic";
 
-import { Circle, CircleCheck, CircleDot } from "lucide-react";
+import { Check, Circle, CircleDot } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import Lesson from "@/app/lessons/_components/Lesson";
@@ -154,7 +154,7 @@ function getStatusIcon(status: "current" | "locked" | "completed") {
   switch (status) {
     case "completed":
       return (
-        <CircleCheck
+        <Check
           size={16}
           className={cn("w-12", `text-${getStatusColor(status)}`)}
         />

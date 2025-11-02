@@ -33,7 +33,7 @@ export default function RoadmapDropdownMenu({
           onClick={() => onDeleteRoadmap(roadmapId)}
         >
           <span>Delete Roadmap</span>
-          <Trash />
+          <Trash color="red" />
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

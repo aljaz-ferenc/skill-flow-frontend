@@ -110,7 +110,7 @@ export default function RoadmapAccordion({
                             className={cn(
                               "hover:underline flex items-center gap-2",
                               lesson.status === "completed" && "text-blue-500",
-                              lesson.status === "current" && "text-primary",
+                              lesson.status === "current" && "text-amber-400",
                             )}
                           >
                             {lesson.status === "completed" && (
