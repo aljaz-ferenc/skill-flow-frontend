@@ -1,4 +1,4 @@
-import { CheckCircle, Lock, PlayCircle } from "lucide-react";
+import { Check, Lock, Play } from "lucide-react";
 import Link from "next/link";
 import { CiLock } from "react-icons/ci";
 import ConceptStatusIndicator from "@/app/dashboard/roadmaps/[roadmapId]/_components/ConceptStatusIndicator";
@@ -26,42 +26,43 @@ export default function RoadmapAccordion({
     <Accordion
       type="multiple"
       defaultValue={[sections.find((s) => s.status === "current")?.title || ""]}
+      className="space-y-2 "
     >
-      {sections.map((section) => (
+      {sections.map((section, index) => (
         <AccordionItem value={section.title} key={section.title}>
           <AccordionTrigger
             className={cn(
-              "cursor-pointer flex items-center",
+              "cursor-pointer flex items-center bg-white px-4 border-none",
               section.status === "locked" && "text-muted-foreground/50",
             )}
           >
             <div className="flex gap-4 items-center">
+              <span className="">Section {index + 1}:</span>
               {section.status === "locked" && <CiLock size={20} />}
-              {section.status === "current" && (
+
+              <div className="flex items-center gap-2">
+                <h3 className="font-bold leading-normal">{section.title}</h3>
+                {/*{section.status === "current" && (*/}
+                {/*  <p className="text-amber-400 text-xs italic">In Progress</p>*/}
+                {/*)}*/}
+                {/*{section.status === "locked" && (*/}
+                {/*  <p className="text-muted-foreground/50 text-xs italic">*/}
+                {/*    Locked*/}
+                {/*  </p>*/}
+                {/*)}*/}
+                {/*{section.status === "completed" && (*/}
+                {/*  <p className="text-amber-400 text-xs italic">Completed</p>*/}
+                {/*)}*/}
+              </div>
+              {["current", "completed"].includes(section.status) && (
                 <ProgressIndicator
                   progress={getSectionProgressPercentage(section)}
                 />
               )}
-              <div className="flex flex-col">
-                <h3 className="text-base font-medium leading-normal">
-                  {section.title}
-                </h3>
-                {section.status === "current" && (
-                  <p className="text-amber-400 text-xs italic">In Progress</p>
-                )}
-                {section.status === "locked" && (
-                  <p className="text-muted-foreground/50 text-xs italic">
-                    Locked
-                  </p>
-                )}
-                {section.status === "completed" && (
-                  <p className="text-amber-400 text-xs italic">Completed</p>
-                )}
-              </div>
             </div>
           </AccordionTrigger>
-          <AccordionContent>
-            <ul className="flex flex-col">
+          <AccordionContent className="bg-white border-none rounded-md mt-2">
+            <ul className="flex flex-col ">
               <hr className="mb-3" />
               {section.concepts.map(async (concept) => {
                 const lessons = await getLessonsByConceptId(concept._id);
@@ -78,19 +79,24 @@ export default function RoadmapAccordion({
                       <ConceptStatusIndicator status={concept.status} />
                       <div key={concept.title} className="flex flex-col gap-1">
                         <span className="font-bold">{concept.title}</span>
-                        <span className="font-normal text-xs text-muted-foreground">
-                          {concept.description}
-                        </span>
+                        {/*<span className="font-normal  text-muted-foreground">*/}
+                        {/*  {concept.description}*/}
+                        {/*</span>*/}
                       </div>
                     </div>
-                    <div className="flex flex-col gap-3 text-xs mb-10 ml-10">
+                    <div
+                      className={cn(
+                        "flex relative flex-col gap-3  pl-3 ml-6 before:content-[''] before:h-full before:w-px before:bg-border before:absolute before:left-0 before:top-0",
+                        concept.status === "locked" ? "mb-0" : "mb-6",
+                      )}
+                    >
                       {lessons.map((lesson) => {
                         if (lesson.status === "locked") {
                           return (
                             <button
                               type="button"
                               key={lesson._id}
-                              className="text-muted-foreground flex items-center gap-2"
+                              className="text-muted-foreground/50 flex items-center gap-2"
                             >
                               <Lock size={12} />
                               {lesson.title}
@@ -108,11 +114,9 @@ export default function RoadmapAccordion({
                             )}
                           >
                             {lesson.status === "completed" && (
-                              <CheckCircle size={12} />
+                              <Check size={12} />
                             )}
-                            {lesson.status === "current" && (
-                              <PlayCircle size={12} />
-                            )}
+                            {lesson.status === "current" && <Play size={12} />}
                             {lesson.title}
                           </Link>
                         );
