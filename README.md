@@ -53,7 +53,7 @@ SkillFlow is an AI-driven learning platform that generates personalized roadmaps
 
 
 2. **Continue Roadmap**  
-   Click **Continue** on the roadmap card.
+   Click **Continue Learning** on the roadmap card.
 
    <img src="/public/readme/continue.png" width="200" alt="Continue Roadmap"/>
 
