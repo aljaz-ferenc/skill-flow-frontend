@@ -28,7 +28,7 @@ export default function RoadmapSearch() {
       <div className="flex-1">
         <Label
           htmlFor="search"
-          className="flex flex-col min-w-40 h-12 w-full focus-within:outline focus-within:outline-primary"
+          className="flex flex-col min-w-40 h-12 w-full focus-within:outline-2 outline-primary/50"
         >
           <div className="flex w-full flex-1 items-stretch rounded-lg h-full">
             <div className="text-gray-500 dark:text-gray-400 flex border-none bg-white dark:bg-gray-800 items-center justify-center pl-4 rounded-l-lg border-r-0">

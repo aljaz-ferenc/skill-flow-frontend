@@ -42,17 +42,6 @@ export default function RoadmapAccordion({
 
               <div className="flex items-center gap-2">
                 <h3 className="font-bold leading-normal">{section.title}</h3>
-                {/*{section.status === "current" && (*/}
-                {/*  <p className="text-amber-400 text-xs italic">In Progress</p>*/}
-                {/*)}*/}
-                {/*{section.status === "locked" && (*/}
-                {/*  <p className="text-muted-foreground/50 text-xs italic">*/}
-                {/*    Locked*/}
-                {/*  </p>*/}
-                {/*)}*/}
-                {/*{section.status === "completed" && (*/}
-                {/*  <p className="text-amber-400 text-xs italic">Completed</p>*/}
-                {/*)}*/}
               </div>
               {["current", "completed"].includes(section.status) && (
                 <ProgressIndicator

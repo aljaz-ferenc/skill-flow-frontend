@@ -1,6 +1,10 @@
+import type { Roadmap } from "@/lib/types";
+
 export const dynamic = "force-dynamic";
 
+import { Suspense } from "react";
 import RoadmapAccordion from "@/app/dashboard/roadmaps/[roadmapId]/_components/RoadmapAccordion";
+import RoadmapSkeleton from "@/app/dashboard/roadmaps/[roadmapId]/_components/RoadmapSkeleton";
 import { getRoadmap } from "@/lib/actions";
 import { getRoadmapProgressPercentage } from "@/lib/utils";
 
@@ -10,10 +14,25 @@ export default async function RoadmapPage({
   params: Promise<{ roadmapId: string }>;
 }) {
   const { roadmapId } = await params;
-  const roadmap = await getRoadmap(roadmapId);
+  const roadmapPromise = getRoadmap(roadmapId);
 
   return (
     <main className="w-full flex flex-col gap-10 max-w-4xl mx-auto p-8">
+      <Suspense fallback={<RoadmapSkeleton sectionsCount={6} />}>
+        <RoadmapWrapper roadmapPromise={roadmapPromise} />
+      </Suspense>
+    </main>
+  );
+}
+
+async function RoadmapWrapper({
+  roadmapPromise,
+}: {
+  roadmapPromise: Promise<Roadmap>;
+}) {
+  const roadmap = await roadmapPromise;
+  return (
+    <>
       <h3 className="text-4xl font-bold">{roadmap.topic}</h3>
       <div className="gap-6 justify-between items-center">
         <p className="text-base font-medium leading-normal">Progress</p>
@@ -28,6 +47,6 @@ export default async function RoadmapPage({
         </div>
       </div>
       <RoadmapAccordion sections={roadmap.sections} roadmapId={roadmap._id} />
-    </main>
+    </>
   );
 }

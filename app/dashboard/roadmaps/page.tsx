@@ -12,9 +12,10 @@ import type { Roadmap } from "@/lib/types";
 export default async function RoadmapsPage({
   searchParams,
 }: {
-  searchParams: { q?: string };
+  searchParams: Promise<{ q?: string }>;
 }) {
-  const query = searchParams.q || "";
+  const { q } = await searchParams; // ✅ await here
+  const query = q || "";
   const roadmapsPromise = getRoadmaps(query);
 
   return (
@@ -23,7 +24,9 @@ export default async function RoadmapsPage({
         <h2 className="text-4xl font-bold">My Roadmaps</h2>
         <NewRoadmapCard />
       </div>
+
       <RoadmapSearch />
+
       <Suspense fallback={<RoadmapsLoadingFallback count={5} />}>
         <RoadmapsListWrapper roadmapsPromise={roadmapsPromise} />
       </Suspense>
