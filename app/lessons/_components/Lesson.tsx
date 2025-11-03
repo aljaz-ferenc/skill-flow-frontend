@@ -4,10 +4,10 @@ import { AlertCircle, ArrowLeft, Clock } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Markdown from "react-markdown";
-import { PuffLoader } from "react-spinners";
 import rehypePrism from "rehype-prism-plus";
 import remarkGfm from "remark-gfm";
 import ExerciseComponent from "@/app/lessons/_components/Exercise";
+import LoadingScreen from "@/components/LoadingScreen";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -245,14 +245,10 @@ export default function Lesson({
   }
 
   if (isGenerating || isFinishingConcept) {
-    return (
-      <div className="flex flex-col items-center justify-center h-screen w-full">
-        <PuffLoader color="var(--color-primary)" />
-        <p className="mt-4 text-sm text-muted-foreground font-bold animate-pulse">
-          {isGenerating ? "Generating lesson..." : "Finishing things up..."}
-        </p>
-      </div>
-    );
+    const loadingText = isGenerating
+      ? "Generating lesson..."
+      : "Finishing things up...";
+    return <LoadingScreen text={loadingText} />;
   }
 
   if (!currentLesson?.exercises || !currentLesson.content) return;
