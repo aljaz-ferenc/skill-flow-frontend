@@ -11,5 +11,5 @@ export default function ConceptStatusIndicator({
   if (status === "current")
     return <PlayCircle className="text-amber-400" size={16} />;
 
-  return <CheckCircle size={16} />;
+  return <CheckCircle size={16} className="text-primary" />;
 }

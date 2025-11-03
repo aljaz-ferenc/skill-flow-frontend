@@ -61,14 +61,14 @@ export default function RoadmapAccordion({
                       className={cn(
                         "flex gap-3 items-center px-4 py-4 rounded-xl transition-colors",
                         concept.status === "locked" &&
-                          "text-muted-foreground pointer-events-none",
+                          "text-muted-foreground/50 pointer-events-none",
                       )}
                       key={concept.description}
                     >
                       <ConceptStatusIndicator status={concept.status} />
                       <div key={concept.title} className="flex flex-col">
                         <span className="font-bold">{concept.title}</span>
-                        <span className="font-normal  text-muted-foreground text-xs">
+                        <span className="font-normal text-muted-foreground/50 text-xs">
                           {concept.description}
                         </span>
                       </div>
