@@ -2,6 +2,8 @@ import type { Roadmap } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 import { Suspense } from "react";
 import RoadmapAccordion from "@/app/dashboard/roadmaps/[roadmapId]/_components/RoadmapAccordion";
 import RoadmapSkeleton from "@/app/dashboard/roadmaps/[roadmapId]/_components/RoadmapSkeleton";
@@ -18,6 +20,13 @@ export default async function RoadmapPage({
 
   return (
     <main className="w-full flex flex-col gap-10 max-w-4xl mx-auto p-8">
+      <Link
+        href="/dashboard/roadmaps"
+        className="text-sm ml-auto flex gap-2 items-center text-primary"
+      >
+        <ArrowLeft size={12} />
+        Back to Roadmaps
+      </Link>
       <Suspense fallback={<RoadmapSkeleton sectionsCount={6} />}>
         <RoadmapWrapper roadmapPromise={roadmapPromise} />
       </Suspense>

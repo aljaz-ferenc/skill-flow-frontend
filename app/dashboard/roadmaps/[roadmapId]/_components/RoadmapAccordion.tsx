@@ -66,11 +66,11 @@ export default function RoadmapAccordion({
                       key={concept.description}
                     >
                       <ConceptStatusIndicator status={concept.status} />
-                      <div key={concept.title} className="flex flex-col gap-1">
+                      <div key={concept.title} className="flex flex-col">
                         <span className="font-bold">{concept.title}</span>
-                        {/*<span className="font-normal  text-muted-foreground">*/}
-                        {/*  {concept.description}*/}
-                        {/*</span>*/}
+                        <span className="font-normal  text-muted-foreground text-xs">
+                          {concept.description}
+                        </span>
                       </div>
                     </div>
                     <div
