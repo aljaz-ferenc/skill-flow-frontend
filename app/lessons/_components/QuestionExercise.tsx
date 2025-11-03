@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CircleCheck, CircleX } from "lucide-react";
+import { Bot, CircleCheck, CircleX } from "lucide-react";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import Markdown from "react-markdown";
@@ -11,7 +11,6 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Field, FieldError } from "@/components/ui/field";
-import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { checkAnswer } from "@/lib/actions";
 import type { AnswerResult, Exercise, Lesson } from "@/lib/types";
@@ -78,6 +77,7 @@ export default function QuestionExercise({
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
               <Textarea
+                disabled={isChecking}
                 {...field}
                 id="answer"
                 placeholder="Type your answer here..."
@@ -91,9 +91,22 @@ export default function QuestionExercise({
           )}
         />
         {!answerResult && (
-          <Button className="mt-4" type="submit">
-            {isChecking ? <Spinner /> : "Check Answer"}
-          </Button>
+          // biome-ignore lint/complexity/noUselessFragments: e
+          <>
+            {!isChecking ? (
+              <Button className="mt-4" type="submit">
+                Check Answer
+              </Button>
+            ) : (
+              <Button
+                className="mt-4 flex gap-2 items-center"
+                type="button"
+                disabled
+              >
+                <Bot /> Checking your answer...
+              </Button>
+            )}
+          </>
         )}
       </form>
       {answerResult && (
@@ -121,7 +134,7 @@ export default function QuestionExercise({
                     {answerResult.is_correct ? "Correct!" : "Incorrect!"}
                   </h4>
                 </CardTitle>
-                <span className="prose dark:prose-invert">
+                <span className="prose dark:prose-invert text-sm">
                   <Markdown
                     remarkPlugins={[remarkGfm]}
                     rehypePlugins={[rehypePrism]}

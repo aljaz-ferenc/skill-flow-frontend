@@ -300,7 +300,7 @@ export default function Lesson({
                   </ul>
                 </CardContent>
               </Card>
-              <Card className="max-w-7xl mx-auto mb-12 dark:prose-invert prose  ">
+              <Card className="max-w-7xl mx-auto mb-12 dark:prose-invert prose text-sm">
                 <CardContent className="">
                   <Markdown
                     remarkPlugins={[remarkGfm]}

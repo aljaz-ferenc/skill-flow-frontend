@@ -110,13 +110,13 @@ export default function ExerciseComponent({
               </div>
             </CardTitle>
             {passed ? (
-              <p className="mt-6 text-base text-muted-foreground">
+              <p className="mt-6 text-muted-foreground text-sm">
                 Great job! You've demonstrated a solid understanding of the
                 lesson <strong>{lesson.title}</strong>. You can now move on to
                 the next lesson.
               </p>
             ) : (
-              <p className="mt-6 text-base text-muted-foreground">
+              <p className="mt-6 text-sm text-muted-foreground">
                 You need at least <strong>{passTreshold}%</strong> to pass.
                 Review the lesson content and try again to strengthen your
                 understanding.
