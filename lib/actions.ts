@@ -7,11 +7,15 @@ import { Endpoints } from "@/lib/endpoints";
 import clientPromise from "@/lib/mongodb";
 import type { AnswerResult, Lesson, Roadmap } from "@/lib/types";
 
-export async function getRoadmaps() {
+export async function getRoadmaps(query?: string) {
   try {
     const client = await clientPromise;
     const db = client.db("prod");
-    const roadmaps = await db.collection("roadmaps").find({}).toArray();
+
+    const filter = query ? { topic: { $regex: query, $options: "i" } } : {};
+
+    const roadmaps = await db.collection("roadmaps").find(filter).toArray();
+
     return JSON.parse(JSON.stringify(roadmaps)) as Roadmap[];
   } catch (err) {
     console.error(err);
