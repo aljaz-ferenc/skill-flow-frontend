@@ -19,7 +19,7 @@ export default async function RoadmapPage({
   const roadmapPromise = getRoadmap(roadmapId);
 
   return (
-    <main className="w-full flex flex-col gap-10 max-w-4xl mx-auto p-8">
+    <main className="w-full flex flex-col gap-10 max-w-4xl mx-auto md:p-8">
       <Link
         href="/dashboard/roadmaps"
         className="text-sm ml-auto flex gap-2 items-center text-primary"
@@ -42,7 +42,7 @@ async function RoadmapWrapper({
   const roadmap = await roadmapPromise;
   return (
     <>
-      <h3 className="text-4xl font-bold">{roadmap.topic}</h3>
+      <h3 className="md:text-4xl text-2xl font-bold">{roadmap.topic}</h3>
       <div className="gap-6 justify-between items-center">
         <p className="text-base font-medium leading-normal">Progress</p>
         <p className="text-sm font-normal leading-normal">

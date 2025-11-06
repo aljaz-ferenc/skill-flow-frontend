@@ -139,7 +139,7 @@ export default function ExerciseComponent({
 
   return (
     <>
-      <div className="flex justify-between max-w-4xl mx-auto">
+      <div className="flex justify-between max-w-4xl mx-auto items-center">
         <Badge className="h-6">
           Question {currentExerciseIndex + 1} of {exercises.length}
         </Badge>

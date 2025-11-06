@@ -63,9 +63,9 @@ export default function QuestionExercise({
   }
 
   return (
-    <article className="w-full max-w-4xl pt-20 prose dark:prose-invert mx-auto">
-      <h1>Exercise</h1>
-      <span className="text-lg font-semibold">
+    <article className="w-full max-w-4xl md:pt-20 mt-10 prose dark:prose-invert mx-auto">
+      <h3 className="text-3xl md:text-4xl">Exercise</h3>
+      <span className="md:text-lg font-semibold">
         <Markdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypePrism]}>
           {exercise.question}
         </Markdown>
@@ -83,7 +83,7 @@ export default function QuestionExercise({
                 placeholder="Type your answer here..."
                 autoComplete="off"
                 autoCorrect="off"
-                className="ml-1 bg-white"
+                className="ml-1 bg-white md:text-base text-sm"
                 spellCheck={false}
               />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}

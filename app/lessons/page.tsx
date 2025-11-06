@@ -81,7 +81,7 @@ export default async function LessonsPage(props: PageProps<"/lessons">) {
 
   return (
     <main className="flex min-h-screen overflow-x-hidden">
-      <aside className="p-4 flex flex-col justify-between bg-secondary">
+      <aside className="p-4 xl:flex flex-col justify-between bg-secondary hidden">
         <h3 className="text-xl font-bold mb-2">{concept.title}</h3>
         <div className="w-60">
           {lessons.map((lesson) => {
@@ -117,7 +117,7 @@ export default async function LessonsPage(props: PageProps<"/lessons">) {
                 {getStatusIcon(lesson.status)}
                 <h4
                   className={cn(
-                    "w-full text-xs leading-4",
+                    "w-full text-sm leading-4",
                     `text-${getStatusColor(lesson.status)}`,
                   )}
                 >

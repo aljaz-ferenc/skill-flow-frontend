@@ -19,12 +19,16 @@ export default async function RoadmapsPage({
   const roadmapsPromise = getRoadmaps(query);
 
   return (
-    <main className="w-full max-w-7xl mx-auto p-8">
-      <div className="flex justify-between items-center mb-10">
-        <h2 className="text-4xl font-bold">My Roadmaps</h2>
+    <main className="w-full max-w-7xl mx-auto md:p-8">
+      <div className="flex justify-between  mb-4 md:mb-10 md:flex-row flex-col gap-4 items-start">
+        <h2 className="text-4xl font-bold flex flex-col gap-2">
+          My Roadmaps
+          <span className="text-muted-foreground text-sm font-normal">
+            Refresh your knowledge or learn something new.
+          </span>
+        </h2>
         <NewRoadmapCard />
       </div>
-
       <RoadmapSearch />
 
       <Suspense fallback={<RoadmapsLoadingFallback count={5} />}>

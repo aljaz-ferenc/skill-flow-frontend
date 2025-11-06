@@ -259,9 +259,15 @@ export default function Lesson({
   }
 
   return (
-    <div className="max-w-screen w-full mx-auto max-h-screen overflow-y-auto flex flex-col justify-between p-12 bg-background  ">
+    <div className="max-w-screen w-full mx-auto max-h-screen overflow-y-auto flex flex-col justify-between md:p-12 p-4 bg-background  ">
       <div className=" h-full w-full max-w-7xl mx-auto">
         <section>
+          <div className="w-full">
+            <Button variant={"link"} className="ml-auto flex" onClick={onBack}>
+              <ArrowLeft />
+              Back to Roadmap
+            </Button>
+          </div>
           <h4 className="text-3xl font-bold mb-4">{conceptTitle}</h4>
           <div className="flex gap-1 items-center justify-between text-muted-foreground">
             <span className="flex items-center gap-2 mb-8">
@@ -274,10 +280,6 @@ export default function Lesson({
                 min
               </p>
             </span>
-            <Button variant={"link"} onClick={onBack}>
-              <ArrowLeft />
-              Back to Roadmap
-            </Button>
           </div>
 
           {type === "lesson" ? (
@@ -300,7 +302,7 @@ export default function Lesson({
                   </ul>
                 </CardContent>
               </Card>
-              <Card className="max-w-7xl mx-auto mb-12 dark:prose-invert prose text-sm">
+              <Card className="max-w-7xl mx-auto md:mb-12 mb-6 dark:prose-invert prose text-sm">
                 <CardContent className="">
                   <Markdown
                     remarkPlugins={[remarkGfm]}
@@ -311,7 +313,7 @@ export default function Lesson({
                 </CardContent>
               </Card>
               {currentLesson.status === "current" && (
-                <Card className="mt-14 max-w-7xl mx-auto">
+                <Card className="max-w-7xl mx-auto">
                   <CardContent>
                     <CardTitle className="mb-1">
                       Ready to Test Your Knowledge?

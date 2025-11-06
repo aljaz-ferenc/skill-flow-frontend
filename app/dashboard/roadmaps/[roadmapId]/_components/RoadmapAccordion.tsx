@@ -37,7 +37,9 @@ export default function RoadmapAccordion({
             )}
           >
             <div className="flex gap-4 items-center">
-              <span className="">Section {index + 1}:</span>
+              <span className="hidden md:inline-block">
+                Section {index + 1}:
+              </span>
               {section.status === "locked" && <CiLock size={20} />}
 
               <div className="flex items-center gap-2">
@@ -85,9 +87,11 @@ export default function RoadmapAccordion({
                             <button
                               type="button"
                               key={lesson._id}
-                              className="text-muted-foreground/50 flex items-center gap-2"
+                              className="text-muted-foreground/50 flex items-center gap-2 text-left"
                             >
-                              <Lock size={12} />
+                              <div className="min-w-3">
+                                <Lock size={12} />
+                              </div>
                               {lesson.title}
                             </button>
                           );

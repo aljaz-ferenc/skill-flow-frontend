@@ -66,7 +66,7 @@ export default function NewRoadmapCard() {
                   placeholder="Roadmap title..."
                   autoComplete="off"
                   autoCorrect="off"
-                  className="bg-white"
+                  className="bg-white text-sm"
                 />
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />

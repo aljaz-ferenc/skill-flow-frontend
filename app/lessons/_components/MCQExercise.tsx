@@ -44,12 +44,12 @@ export default function MCQExercise({
     <article className="h-full flex items-center max-w-4xl mx-auto flex-col gap-4">
       <Card className="h-min mx-auto w-full mt-12 dark:prose-invert prose max-w-4xl">
         <CardContent>
-          <span className="text-lg font-semibold prose dark:prose-invert">
+          <span className="md:text-lg font-semibold prose dark:prose-invert">
             <Markdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypePrism]}>
               {exercise.question}
             </Markdown>
           </span>
-          <p className="text-muted-foreground mb-4">
+          <p className="text-muted-foreground mb-4 md:text-base text-sm">
             Select the correct answer
           </p>
           <div className="flex flex-col gap-2">
@@ -57,7 +57,7 @@ export default function MCQExercise({
               <div key={option}>
                 <Label
                   className={cn(
-                    "border text-md px-4 rounded border-transparent hover:bg-muted cursor-pointer",
+                    "border text-md px-4 rounded border-transparent hover:bg-muted cursor-pointer h-12 md:h-16",
                     answerIndex !== null &&
                       isGuessCorrect &&
                       index === answerIndex &&
