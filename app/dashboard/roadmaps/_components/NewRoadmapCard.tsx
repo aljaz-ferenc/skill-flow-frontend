@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import {Bot, Plus} from "lucide-react";
+import { Bot, Plus } from "lucide-react";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -75,7 +75,13 @@ export default function NewRoadmapCard() {
             )}
           />
           <Button className="mt-6" type="submit" disabled={isGenerating}>
-            {isGenerating ? <div className='flex gap-2 items-center'><Bot /> Generating roadmap...</div> : "Generate"}
+            {isGenerating ? (
+              <div className="flex gap-2 items-center">
+                <Bot /> Generating roadmap...
+              </div>
+            ) : (
+              "Generate"
+            )}
           </Button>
         </form>
       </DialogContent>

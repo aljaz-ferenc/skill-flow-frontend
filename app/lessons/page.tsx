@@ -21,7 +21,7 @@ export default async function LessonsPage(props: PageProps<"/lessons">) {
   let lessons: TLesson[] = [];
 
   if (!roadmap || !concept || !section) {
-    throw new Error("Roadmap, concept or section not found");
+    throw new Error("Lesson not found");
   }
 
   if (lessonId) {

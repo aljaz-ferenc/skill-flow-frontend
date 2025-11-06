@@ -40,6 +40,8 @@ async function RoadmapWrapper({
   roadmapPromise: Promise<Roadmap>;
 }) {
   const roadmap = await roadmapPromise;
+  if (!roadmap) throw new Error("Roadmap not found");
+
   return (
     <>
       <h3 className="md:text-4xl text-2xl font-bold">{roadmap.topic}</h3>
