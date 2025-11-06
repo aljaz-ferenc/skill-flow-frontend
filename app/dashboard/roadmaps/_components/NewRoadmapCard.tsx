@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus } from "lucide-react";
+import {Bot, Plus} from "lucide-react";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/dialog";
 import { Field, FieldError } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Spinner } from "@/components/ui/spinner";
 import { generateRoadmap } from "@/lib/actions";
 
 const formSchema = z.object({
@@ -67,6 +66,7 @@ export default function NewRoadmapCard() {
                   autoComplete="off"
                   autoCorrect="off"
                   className="bg-white text-sm"
+                  disabled={isGenerating}
                 />
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
@@ -74,8 +74,8 @@ export default function NewRoadmapCard() {
               </Field>
             )}
           />
-          <Button className="mt-6" type="submit">
-            {isGenerating ? <Spinner /> : "Generate"}
+          <Button className="mt-6" type="submit" disabled={isGenerating}>
+            {isGenerating ? <div className='flex gap-2 items-center'><Bot /> Generating roadmap...</div> : "Generate"}
           </Button>
         </form>
       </DialogContent>
